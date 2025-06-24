@@ -1,0 +1,81 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}
+starting list
+{% endblock %}
+
+{% block body %}
+<!-- Breadcrumb -->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="#">Gare</a></li>
+    <li class="breadcrumb-item active">Starting List</li>
+</ol>
+
+<!-- Selezione gara -->
+<div class="row">
+    <div class="col-md-4 offset-md-4 p-3">
+        <div class="text-center p-1 etichetta">Scegli gara futura</div>
+        <select class="form-control" id="IDGara" required>
+            <option value="">Seleziona gara</option>
+            {% for gara in ListaGareFuture %}
+            <option value="{{ gara.ID_gara }}">
+                {{ gara.nome_evento }}: {{ gara.nome_gara }} ({{ gara.data|date("d/m/Y") }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<!-- Pulsante genera CSV -->
+<div class="row mt-4">
+    <div class="col-md-4 offset-md-4 text-center">
+        <button type="button" id="GeneraStartingList" class="btn button-azzurro btn-block">
+            Genera Starting List CSV
+        </button>
+    </div>
+</div>
+
+<!-- Messaggi errore/stato -->
+<div class="row mt-3">
+    <div class="col-md-6 offset-md-3 text-center">
+        <div id="msgErrore" class="text-danger"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const BASE_URL = '{{ AppPath }}';
+
+    $(document).on('click', '#GeneraStartingList', function () {
+        const idGara = $('#IDGara').val();
+
+        if (!idGara) {
+            $('#msgErrore').text('Devi prima selezionare una gara.');
+            return;
+        }
+
+        $('#msgErrore').text('');
+
+        $.ajax({
+            type: 'POST',
+            url: BASE_URL + 'AdminAccount/ajaxGeneraCSVIscrizioniPerGara',
+            data: {
+                GeneraCSV: 'Gara',
+                IDGara: idGara
+            },
+            dataType: 'json',
+            success: function (result) {
+                if (result.Trovate === 1) {
+                    window.location.href = result.LinkCSV;
+                } else {
+                    $('#msgErrore').text('Nessuna iscrizione trovata per questa gara.');
+                }
+            },
+            error: function () {
+                $('#msgErrore').text('Errore di rete. Riprova più tardi.');
+            }
+        });
+    });
+</script>
+{% endblock %}

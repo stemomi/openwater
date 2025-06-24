@@ -12,6 +12,8 @@
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 
+
+
 /**
  * Error and Exception handling
  */
@@ -133,7 +135,8 @@ $router->add('AdminGare/CaricaRisultatiStaffetteConfirm', ['controller' => 'Admi
 $router->add('AdminGare/Risultati', ['controller' => 'AdminGare', 'action' => 'Risultati']);
 $router->add('AdminGare/Risultati/{id:\d+}', ['controller' => 'AdminGare', 'action' => 'Risultati']);
 $router->add('AdminGare/ajaxTabellaRisultati', ['controller' => 'AdminGare', 'action' => 'ajaxTabellaRisultati']);
-
+$router->add('AdminGare/StartingList', ['controller' => 'AdminGare','action' => 'StartingList']);
+$router->add('AdminGare/getPartecipanti', ['controller' => 'AdminGare','action' => 'getPartecipanti']);
 
 
 // Admin Gare Individuali

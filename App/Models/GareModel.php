@@ -1084,5 +1084,48 @@ class GareModel extends \Core\Model
 		return $MaglietteAcquistate;
 	}
 
-	
+	public function getListaFutureGare()
+{
+    $db = static::getDB(); 
+    $oggi = date('Y-m-d');
+
+    $sql = "
+        SELECT
+            g.ID         AS ID_gara,
+            e.nome       AS nome_evento,
+            g.nome       AS nome_gara,
+            g.data       AS data
+        FROM gare g
+        LEFT JOIN eventi e ON g.ID_evento = e.ID
+        WHERE g.data >= :oggi
+        ORDER BY g.data ASC
+    ";
+
+    $stmt = $db->prepare($sql); // 👈 usa $db, non $this->db
+    $stmt->execute([':oggi' => $oggi]);
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
+
+public function getPartecipantiGara($idGara)
+{
+    $db = static::getDB();
+
+    $sql = "
+        SELECT
+            u.nome,
+            u.cognome,
+            u.gruppo_sportivo AS club
+        FROM iscrizioni i
+        JOIN utenti u ON i.ID_utente = u.ID
+        WHERE i.ID_gara = :idGara
+        ORDER BY u.cognome
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':idGara' => $idGara]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 }

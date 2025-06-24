@@ -701,8 +701,6 @@ class AdminGare extends \Core\Controller
 
         View::renderTemplate('AdminGare/risultati.html', $ArrayTemplateCombined);
     }
-    
-    
 
     public function ajaxTabellaRisultati()
     {
@@ -995,5 +993,69 @@ class AdminGare extends \Core\Controller
             $Risposta['IDCollegamento'] = $IDCollegamento;
             echo json_encode($Risposta);
         }
+    }
+
+    
+
+    public function StartingList()
+    {
+
+        require_once("AdminGate.php");
+
+        $GareClass = new GareModel();
+
+        $id_gara = $this->route_params['id'] ?? 0;
+
+        $ListaGareFuture = $GareClass->getListaFutureGare();
+
+        foreach ($ListaGareFuture as $key => $gara) {
+            if ($GareClass->getPartecipantiGara($gara->ID_gara) < 1) {
+                unset($ListaGareFuture[$key]);
+            }
+        }
+
+        $ArrayTemplateAction = [
+            'ListaGareFuture' => $ListaGareFuture,
+            'id_gara'         => $id_gara,
+        ];
+
+        $ArrayTemplateCombined= $ArrayTemplateGate + $ArrayTemplateAction;
+
+
+        View::renderTemplate('AdminGare/starting_list.html', $ArrayTemplateCombined);
+
+    }
+    
+
+    /**
+     *  AJAX: restituisce in JSON i partecipanti di una gara
+     */
+    public function getPartecipanti()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        // Leggi e valida IDGara
+        $idGara = $_GET['IDGara'] ?? null;
+        if (!$idGara) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Parametro IDGara mancante'
+            ]);
+            exit;
+        }
+
+        // Include SOLO il model (non serve AdminGate qui)
+        require_once("AdminGate.php");
+        $gm = new \App\Models\GareModel();
+
+        // Prendi i partecipanti
+        $partecipanti = $gm->getPartecipantiGara($idGara);
+
+        // Manda il JSON
+        echo json_encode([
+            'success'      => true,
+            'partecipanti' => $partecipanti
+        ]);
+        exit;
     }
 }
