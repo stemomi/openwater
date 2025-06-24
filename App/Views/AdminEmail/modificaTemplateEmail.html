@@ -1,0 +1,135 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Modifica Template Email{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Email</a>
+	  <li class="breadcrumb-item active">Modifica Template Email</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Modifica Template Email</div>
+        <div class="card-body">
+
+        	<div class="col-md-12 p-3" id="SpazioNotifica">{% if TemplateEmailModificato is defined %}{{ TemplateEmailModificato|raw }}{% endif %}</div>
+
+			<form action="{{AppPath}}AdminEmail/ModificaTemplateEmailConfirm" method="post">
+
+				<input type="hidden" name="IDTemplateEmail" value="{{ TemplateEmail.ID }}">
+
+				<div class="form-group row justify-content-center">
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Nome<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  	<input type="text" class="form-control" name="Nome" id="Nome" value="{{ TemplateEmail.nome }}" required="required" autofocus="autofocus">
+		                </div>
+		            </div>
+				</div>
+
+				<div class="form-group row justify-content-center">
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Oggetto<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  	<input type="text" class="form-control" name="Oggetto" id="Oggetto" value="{{ TemplateEmail.oggetto }}" required="required">
+		                </div>
+		            </div>
+				</div>
+
+				<div class="form-group row justify-content-center">
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Messaggio<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                	<textarea class="form-control" name="Messaggio" id="Messaggio" rows="8" required="required">{{ TemplateEmail.messaggio }}</textarea>
+		                </div>
+		            </div>
+				</div>
+
+				<div class="col-lg-3 m-auto">
+	              <button type="submit" name="ConfermaModificaTemplateEmail" class="btn button-azzurro btn-block mt-5">Conferma</button>
+	            </div>
+
+    		</form>
+
+    	</div>
+    </div>
+</div>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Test</div>
+        <div class="card-body">
+
+        	<div class="col-md-12 p-3 text-center text-success" id="InvioInCorsoTestEmail" style="display: none;">Invio in corso...</div>
+        	<div class="col-md-12 p-3 text-center" id="EsitoInvioTestEmail"></div>
+
+        	<div class="form-group row justify-content-center">
+
+				<div class="col-md-4 p-3">
+	                <div class="text-center p-1 etichetta">Email<span class="text-danger">*</span></div>
+	                <div class="form-label-group">
+	                  	<input type="text" class="form-control" id="TestEmail">
+	                </div>
+	            </div>
+
+			</div>
+
+			<div class="col-lg-3 m-auto">
+              <button type="submit" id="ConfermaInvioTestTemplateEmail" class="btn button-azzurro btn-block mt-5">Invia Test</button>
+            </div>
+
+    	</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_email').click();
+		$('#menu_template_modifica').addClass('active');
+
+		if ( $('#SpazioNotifica').html() != '' ) $('#SpazioNotifica').addClass('ButtonAnimato');
+
+		// Invio di testing
+		$(document).on('click', '#ConfermaInvioTestTemplateEmail', function()
+		{
+			var TestEmail = $('#TestEmail').val();
+			var Oggetto = $('#Oggetto').val();
+			var Messaggio = $('#Messaggio').val();
+
+			$('#InvioInCorsoTestEmail').show();
+
+			$.ajax(
+			{
+		        type: 'POST',
+		        url: URL + '{{URL}}AdminEmail/ajaxInviaTestTemplateEmail',
+		        data: {
+		                TestEmail: TestEmail,
+		                Oggetto: Oggetto,
+		                Messaggio: Messaggio
+		              },
+		        dataType: 'json',
+		        cache: false,
+		        success: function(result)
+		        {
+		        	$('#InvioInCorsoTestEmail').hide();
+		        	
+		        	if (result.Esito == 1)
+		        		$('#EsitoInvioTestEmail').html('<span class="text-success">Invio email di test effettuato con successo!</span>');
+		        	else
+		        		$('#EsitoInvioTestEmail').html('<span class="text-danger">Errore invio email di test!</span>');
+		        }
+			});
+		});
+	});
+</script>
+
+{% endblock %}

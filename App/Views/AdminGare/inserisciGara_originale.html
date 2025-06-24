@@ -1,0 +1,307 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Gare - Inserisci Gara{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Gare</a>
+	  <li class="breadcrumb-item active">Inserisci Gara</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Inserisci Gara</div>
+        <div class="card-body">
+
+        	<div class="col-md-12 p-3" id="SpazioNotifica">{% if GaraInserita is defined %}{{ GaraInserita|raw }}{% endif %}</div>
+
+			<form action="{{AppPath}}AdminGare/inserisciGara/{% if Gara %}{{ Gara.ID }}{% else %}0{% endif %}" method="post">
+
+				<div class="form-group row">
+
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Scegli evento<span class="text-danger">*</span></div>
+		                <select class="form-control" name="IDEvento" required="required">
+		                	<option value="">Seleziona evento</option>
+		                	{% for evento in Eventi %}
+		                		<option value="{{ evento.ID }}" {% if Gara and Gara.ID_evento == evento.ID %}selected{% endif %}>{{ evento.nome }}</option>
+		                	{% endfor%}
+		                </select>
+		            </div>
+
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Nome gara<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="text" 
+                                class="form-control" 
+                                name="Nome" 
+                                required="required" 
+                                autofocus="autofocus"
+                                {% if Gara %}value="{{ Gara.nome }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Termine prezzo 1 (fino al, incluso)<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+						    <input 
+                                type="text" 
+                                class="form-control datepicker" 
+                                name="DataPrezzo1" 
+                                required="required"
+                                {% if Gara %}value="{{ Gara.data_prezzo1 }}"{% endif %}
+                            >
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo 1<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="number" 
+                                step="0.01" 
+                                min="0" 
+                                class="form-control" 
+                                name="Prezzo1" 
+                                required="required"
+                                {% if Gara %}value="{{ Gara.prezzo1 }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Sconto %</div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="number" 
+                                step="1" 
+                                min="0" 
+                                max="99" 
+                                class="form-control" 
+                                name="ScontoPrezzo1"
+                                {% if Gara %}value="{{ Gara.sconto_prezzo1 }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Termine prezzo 2 (fino al, incluso)<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+						    <input 
+                                type="text" 
+                                class="form-control datepicker" 
+                                name="DataPrezzo2" 
+                                required="required"
+                                {% if Gara %}value="{{ Gara.data_prezzo2 }}"{% endif %}
+                            >
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo 2<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="number" 
+                                step="0.01" 
+                                min="0" 
+                                class="form-control" 
+                                name="Prezzo2" 
+                                required="required"
+                                {% if Gara %}value="{{ Gara.prezzo2 }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Sconto %</div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="number" 
+                                step="1" 
+                                min="0" 
+                                max="99" 
+                                class="form-control" 
+                                name="ScontoPrezzo2"
+                                {% if Gara %}value="{{ Gara.sconto_prezzo2 }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Termine prezzo 3 (fino al, incluso)<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+						    <input 
+                                type="text" 
+                                class="form-control datepicker" 
+                                name="DataPrezzo3" 
+                                required="required"
+                                {% if Gara %}value="{{ Gara.data_prezzo3 }}"{% endif %}
+                            >
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo 3<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="number" 
+                                step="0.01" 
+                                min="0" 
+                                class="form-control" 
+                                name="Prezzo3" 
+                                required="required"
+                                {% if Gara %}value="{{ Gara.prezzo3 }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Sconto %</div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="number" 
+                                step="1" 
+                                min="0" 
+                                max="99" 
+                                class="form-control"
+                                name="ScontoPrezzo3"
+                                {% if Gara %}value="{{ Gara.sconto_prezzo3 }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta" hidden></div>
+						<div class="form-label-group" hidden>
+						  <input type="text" class="form-control datepicker" name="DataPrezzo4">
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo Finale<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="number" 
+                                step="0.01" 
+                                min="0" 
+                                class="form-control" 
+                                name="Prezzo4" 
+                                required="required"
+                                {% if Gara %}value="{{ Gara.prezzo4 }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Sconto %</div>
+		                <div class="form-label-group">
+		                    <input 
+                                type="number" 
+                                step="1" 
+                                min="0" 
+                                max="99" 
+                                class="form-control" 
+                                name="ScontoPrezzo4"
+                                {% if Gara %}value="{{ Gara.sconto_prezzo4 }}"{% endif %}
+                            >
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row justify-content-center">
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Tipo Gara<span class="text-danger">*</span></div>
+		                <select class="form-control" name="IDTipo" id="IDTipo" required="required">
+		                	<option value="">Seleziona tipo gara</option>
+		                	<option value="1" {% if 1 == Gara.tipo %}selected{% endif %}>Corta</option>
+		                	<option value="2" {% if 2 == Gara.tipo %}selected{% endif %}>Media</option>
+		                	<option value="3" {% if 3 == Gara.tipo %}selected{% endif %}>Lunga</option>
+		                	<option value="0" {% if 0 == Gara.tipo %}selected{% endif %}>Staffetta o Combinata</option>
+		                </select>
+		            </div>
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Staffetta</div>
+						<div class="form-label-group text-center">
+						    <input 
+                                type="checkbox" 
+                                name="Staffetta" 
+                                id="Staffetta"
+                                {% if Gara and Gara.staffetta %}checked{% endif %}
+                            >
+						</div>
+					</div>
+
+					<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Gara Combinata</div>
+						<div class="form-label-group text-center">
+						  <input type="checkbox" name="GaraCombinata" {% if Gara and Gara.combinata %}checked{% endif %}>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-lg-3 m-auto">
+	              <button type="submit" id="ConfermaInserisciGaraSubmit" class="btn button-azzurro btn-block mt-5" hidden>Conferma</button>
+	              <button type="button" id="ConfermaInserisciGaraButton" class="btn button-azzurro btn-block mt-5">Conferma</button>
+	            </div>
+
+    		</form>
+
+    	</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_gare').click();
+		$('#menu_inserisci_gara').addClass('active');
+
+		if ( $('#SpazioNotifica').html() != '' ) $('#SpazioNotifica').addClass('ButtonAnimato');
+
+		// Invio form
+		$(document).on('click', '#ConfermaInserisciGaraButton', function()
+		{
+			var Tipo = $('#IDTipo option:selected').val();
+			var StaffettaFlag = $('#Staffetta').is(':checked') ? 1 : 0;
+
+			if (StaffettaFlag == 1 && Tipo != 0)
+				$('#IDTipo').val(0);
+
+			$('#ConfermaInserisciGaraSubmit').click();
+		});
+	});
+</script>
+
+{% endblock %}

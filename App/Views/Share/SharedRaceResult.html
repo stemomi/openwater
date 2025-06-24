@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block head %}
+	<meta property="og:title" content="Italian Openwater Tour"/>
+	<meta property="og:description" content="Race Result">
+	<meta property="og:type" content="website" />
+	<meta property="og:image" content="https://{{ URL_SHARE_RACE_RESULTS_NO_SLASHES }}{{ SharedRaceResult.immagine }}"/>
+	<meta property="og:image:secure_url" content="https://{{ URL_SHARE_RACE_RESULTS_NO_SLASHES }}{{ SharedRaceResult.immagine }}" />
+{% endblock %}
+
+{% block title %}Italian Openwater Tour - Race Result{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-12">
+    	<img src="{{ URL_SHARE_RACE_RESULTS }}{{ SharedRaceResult.immagine }}" style="width: 100%; height: auto">
+    </div>
+    <div class="col-lg-12 my-5 text-center">
+    	<a href="https://italianopenwatertour.com" target="_blank">
+    		<button class="btn btn-primary">Vai al sito</button>
+    	</a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function()
+{
+	$('.bg-sfondo-login').css('background', 'none');
+	$('#google_translate_element').remove();
+});
+</script>
+
+{% endblock %}

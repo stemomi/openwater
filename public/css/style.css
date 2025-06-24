@@ -1,0 +1,155 @@
+.bg-sfondo-login
+{
+	background: url(../img/header-bg.jpg);
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+#espandi_genitore i { transition: transform 0.3s; }
+
+.flip0 { transform: rotate(0deg); }
+.flip90 { transform: rotate(90deg); }
+
+.container_no_max_width { max-width:none !important; }
+
+.card-header { background-color: #343a40; color: white; }
+
+.sfondo-rosso { background-color: rgb(180,20,20); border-color: rgb(220,20,20); color: white; }
+.sfondo-verde { background-color: #28a745; border-color: #28a745; color: white; }
+.sfondo-azzurro_tema { background-color: #0e7a90; border-color: #0e7a90; color: white; }
+.sfondo-giallo { background-color: #ffc107; border-color: #ffc107; color: black; }
+.sfondo-grigio { background-color: #343a40; border-color: #343a40; color: white; }
+.sfondo-azzurro-tenue { background-color: #e9ecef; }
+
+.testo-azzurro-tema { color: #0e7a90; }
+
+.button-azzurro { background-color: #0e7a90; border-color: #0e7a90; color: white; }
+.button-azzurro:hover { background-color: #0a6478; border-color: #0a6478; color: white; }
+
+a { color: rgb(180,20,20);}
+a:hover { color: rgb(180,180,180); }
+
+.etichetta {font-weight: bold; font-style: italic; }
+
+.foto-evento
+{
+	width: 100%;
+	height: auto;
+	border-radius: 5px;
+	box-shadow: 0px 0px 20px 1px rgb(100,100,100);
+}
+
+.foto-gara
+{
+	width: 100%;
+	height: auto;
+	border-radius: 3px;
+	box-shadow: 0px 0px 10px 1px rgb(100,100,100);
+}
+
+.foto_profilo
+{ 
+	width: 200px;
+	height: 200px;
+}
+
+.foto_profilo_menu
+{ 
+	width: 60px;
+	height: 60px;
+	margin: 20px auto;
+}
+
+.box-shadow-10 { box-shadow: 0px 0px 10px 1px rgb(100,100,100); }
+.box-shadow-20 { box-shadow: 0px 0px 20px 1px rgb(100,100,100); }
+
+.border-radius-3 {border-radius: 3px; }
+
+.titolo-evento { font-size: 22px;  font-style: italic; }
+
+.border-style-solid { border-style: solid; }
+
+.menu-link-attivo
+{
+	background-color: #b41414;
+	border-radius: 5px;
+	color: white !important;
+}
+
+.dropdown-item.active { background-color: #b41414 !important; }
+
+select:not(.show-disabled-options) option:disabled { display:none; }
+
+.BarraAvanzamentoVerde
+{
+	width: 1px;
+	background-color: green;
+	height: 30px;
+}
+
+.ButtonAnimato
+{
+	animation-name: AnimazioneButton;
+	animation-duration: 3s;
+	animation-fill-mode: forwards;
+}
+
+@keyframes AnimazioneButton
+{
+	0%    {opacity: 1;}
+	10%   {opacity: 0.8; transform:scale(1.5,1.5);}
+	50%   {opacity: 1;}
+	95%   {opacity: 0;}
+	100%  {opacity: 0; display: none; padding: 0px; margin: 0px;}
+}
+
+@media (max-width: 768px)
+{
+	.dimensione-testi-cellulare, b, p 
+	{
+		font-size: .7em !important;
+	}
+
+	thead > tr > th 
+	{
+		font-size: .4em !important;
+	}
+
+	h2 
+	{
+		font-size: 1em !important;
+	}
+
+	img 
+	{
+		max-height: 2em;
+		max-width: 2em;
+		padding: 0px !important;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 992px)
+{
+	.dimensione-testi-cellulare, b, p 
+	{
+		font-size: 1em !important;
+	}
+
+	thead > tr > th 
+	{
+		font-size: .8em !important;
+	}
+
+	h2 
+	{
+		font-size: 1.5em !important;
+	}
+
+	img 
+	{
+		max-height: 2.5em;
+		max-width: 2.5em;
+		padding: 0px !important;
+	}
+}

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% set AppPath= URL_TO_PUBLIC_FOLDER %}
+{% set URL_GPS_FILES= URL_GPS_FILES %}
+{% set URL_GPS_FOTO= URL_GPS_FOTO %}
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>{% block title %}{% endblock %}</title>
+
+	<!-- Bootstrap core CSS-->
+	<link href="{{AppPath}}vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom fonts for this template-->
+	<link href="{{AppPath}}vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+	<!-- Fa Fa Font -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<!-- Page level plugin CSS-->
+	<link href="{{AppPath}}vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+	<!-- Custom styles for this template-->
+	<link href="{{AppPath}}css/sb-admin.css" rel="stylesheet">
+
+	<!-- Personale-->
+	<link href="{{AppPath}}css/style.css?v=1.005" rel="stylesheet">
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" type="image/x-icon" href="{{AppPath}}fav_open.png">
+</head>
+
+<body id="page-top">
+
+	<script type="text/javascript">
+		URL = "{{ URL_TO_PUBLIC_FOLDER }}";
+	</script>
+
+	<nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+
+		<a class="navbar-brand mr-1" href="#">DnaRace</a>
+
+		<button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+			<i class="fas fa-bars"></i>
+		</button>
+
+		<!-- Navbar -->
+		<div class="d-flex justify-content-end ml-auto">
+
+			<ul class="navbar-nav ml-auto ml-md-0">
+				<li class="nav-item dropdown no-arrow">
+					<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false">
+						<i class="fas fa-user-circle fa-fw"></i>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+						<a class="dropdown-item" href="#">Impostazioni</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+					</div>
+				</li>
+			</ul>
+
+		</div>
+
+	</nav>
+
+	<div id="wrapper">
+
+		<!-- Sidebar -->
+		<ul class="sidebar navbar-nav">
+
+			{% if Utente.foto_profilo != '' %}
+			<img src="{{AppPath}}{{ Utente.foto_profilo }}" class="rounded-circle foto_profilo_menu" width="60"
+				height="60" alt="foto profilo">
+			{% else %}
+			<img src="{{AppPath}}img/foto_profilo_default.png" class="rounded-circle foto_profilo_menu" width="60"
+				height="60" alt="foto profilo">
+			{% endif %}
+
+			<li class="nav-item">
+				<a class="nav-link" id="menu_panoramica" href="{{AppPath}}AdminAccount/Profile">
+					<i class="fa fa-eye"></i>
+					<span>Panoramica</span>
+				</a>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_utenti" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-fw fa-user"></i>
+					<span>Utenti</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_utenti" href="{{AppPath}}AdminAccount/Utenti">Tutti gli Utenti</a>
+					<a class="dropdown-item" id="menu_utenti_minorenni"
+						href="{{AppPath}}AdminAccount/UtentiMinorenni">Utenti Minorenni</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_squadre" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-fw fa-group"></i>
+					<span>Squadre</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_squadre" href="{{AppPath}}AdminAccount/Squadre">Lista Squadre</a>
+					<a class="dropdown-item" id="menu_crea_squadra" href="{{AppPath}}AdminAccount/CreaSquadra">Crea
+						Squadra</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_opzioni_acquisto" role="button"
+					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-fw fa-gift"></i>
+					<span>Opzioni Acquisto</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_opzioni_acquisto" href="{{AppPath}}OpzioniAcquisto/Lista">Lista
+						Opzioni Acquisto</a>
+					<a class="dropdown-item" id="menu_crea_opzione_acquisto"
+						href="{{AppPath}}OpzioniAcquisto/CreaOpzioneAcquisto">Crea Opzione Acquisto</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_shop" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-shopping-cart"></i>
+					<span>Shop</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_lista_prodotti" href="{{AppPath}}Prodotti/Lista">Prodotti</a>
+					<a class="dropdown-item" id="menu_lista_prodotti_acquistati"
+						href="{{AppPath}}Prodotti/listaProdottiAcquistati">Prodotti Acquistati</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_iscrizioni" role="button"
+					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-fw fa-pen"></i>
+					<span>Iscrizioni</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_lista_iscrizioni_anno"
+						href="{{AppPath}}AdminAccount/IscrizioniAnno">Lista Iscrizioni</a>
+					<a class="dropdown-item" id="menu_lista_iscrizioni_da_pagare"
+						href="{{AppPath}}AdminAccount/IscrizioniDaPagare">Iscrizioni da pagare</a>
+					<a class="dropdown-item" id="menu_lista_iscrizioni" href="{{AppPath}}AdminAccount/Iscrizioni">Tutte
+						Le Iscrizioni</a>
+					<a class="dropdown-item" id="menu_acquisti_magliette"
+						href="{{AppPath}}AdminAccount/AcquistiMagliette">Acquisti Magliette</a>
+					<a class="dropdown-item" id="menu_magliette_da_pagare"
+						href="{{AppPath}}AdminAccount/MaglietteDaPagare">Magliette da pagare</a>
+					<a class="dropdown-item" id="menu-opzioni-acquisto-acquistate"
+						href="{{AppPath}}AdminAccount/listaOpzioniAcquistoAcquistate">Acquisti opzioni</a>
+					<a class="dropdown-item" id="menu_scarica_csv_iscrizioni"
+						href="{{AppPath}}AdminAccount/ScaricaCSVIscrizioni">Scarica CSV</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown-iscrizioni-squadre" role="button"
+					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-fw fa-pen"></i>
+					<span>Iscrizioni Squadre</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu-lista-iscrizioni-squadre"
+						href="{{AppPath}}AdminAccount/iscrizioniSquadre">Lista Iscrizioni Squadre</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown" hidden>
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_iscrizioni_gare_individuali" role="button"
+					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-fw fa-pen"></i>
+					<span>Iscrizioni Individuali</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_lista_iscrizioni_anno_gare_individuali"
+						href="{{AppPath}}AdminAccount/IscrizioniAnnoGareIndividuali">Lista Iscrizioni</a>
+					<a class="dropdown-item" id="menu_lista_iscrizioni_gare_individuali"
+						href="{{AppPath}}AdminAccount/IscrizioniGareIndividuali">Tutte Le Iscrizioni</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_gare" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-flag-checkered"></i>
+					<span>Gare</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_inserisci_evento"
+						href="{{AppPath}}AdminGare/InserisciEvento">Inserisci Evento</a>
+					<a class="dropdown-item" id="menu_inserisci_gara"
+						href="{{AppPath}}AdminGare/InserisciGara/0">Inserisci Gara</a>
+					<a class="dropdown-item" id="menu_lista_eventi" href="{{AppPath}}AdminGare/ListaEventi">Lista
+						Eventi</a>
+					<a class="dropdown-item" id="menu_lista_gare" href="{{AppPath}}AdminGare/ListaGare">Lista Gare</a>
+					<a class="dropdown-item" id="menu_lista_staffette" href="{{AppPath}}AdminGare/ListaStaffette">Lista
+						Staffette</a>
+					<a class="dropdown-item" id="menu_lista_risultati"
+						href="{{AppPath}}AdminGare/Risultati">Risultati</a>
+					<a class="dropdown-item" id="menu_carica_risultati"
+						href="{{AppPath}}AdminGare/CaricaRisultati">Carica Risultati</a>
+					<a class="dropdown-item" id="menu_carica_risultati_staffette"
+						href="{{AppPath}}AdminGare/CaricaRisultatiStaffette">Carica Risultati Staffette</a>
+					<a class="dropdown-item" id="menu_starting_list" href="{{AppPath}}AdminGare/Starting_list">Starting
+						List</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown" hidden>
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_gare_individuali" role="button"
+					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-clock"></i>
+					<span>Gare Individuali</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_inserisci_evento_individuale"
+						href="{{AppPath}}AdminGareIndividuali/InserisciEvento">Inserisci Evento</a>
+					<a class="dropdown-item" id="menu_inserisci_gara_individuale"
+						href="{{AppPath}}AdminGareIndividuali/InserisciGara">Inserisci Gara</a>
+					<a class="dropdown-item" id="menu_lista_eventi_individuali"
+						href="{{AppPath}}AdminGareIndividuali/ListaEventi">Lista Eventi</a>
+					<a class="dropdown-item" id="menu_lista_gare_individuali"
+						href="{{AppPath}}AdminGareIndividuali/ListaGare">Lista Gare</a>
+					<a class="dropdown-item" id="menu_risultati_individuali"
+						href="{{AppPath}}AdminGareIndividuali/Risultati">Risultati</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_sconti" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-usd"></i>
+					<span>Sconti Combo Gare</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_lista_sconti_combo_gare"
+						href="{{AppPath}}AdminSconti/ListaScontiComboGare">Lista Sconti</a>
+					<a class="dropdown-item" id="menu_inserisci_sconto_combo_gare"
+						href="{{AppPath}}AdminSconti/InserisciScontoComboGare">Inserisci Sconto</a>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="dropdown_email" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-fw fa-envelope"></i>
+					<span>Email</span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="pagesDropdown">
+					<a class="dropdown-item" id="menu_email_con_filtri"
+						href="{{AppPath}}AdminEmail/EmailConFiltri">Email Con Filtri</a>
+					<a class="dropdown-item" id="menu_template_modifica"
+						href="{{AppPath}}AdminEmail/ModificaTemplateEmail/1">Template Paypal</a>
+				</div>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link" id="menu_impostazioni" href="{{AppPath}}AdminImpostazioni/Impostazioni">
+					<i class="fa fa-gear"></i>
+					<span>Impostazioni</span>
+				</a>
+			</li>
+		</ul>
+
+		<div id="content-wrapper">
+
+			<div class="container-fluid">
+
+				{% block body %}
+				{% endblock %}
+
+				<!-- Sticky Footer -->
+				<footer class="sticky-footer">
+					<div class="container my-auto">
+						<div class="copyright text-center my-auto">
+							<span>Copyright © DnaRace {{ 'now'|date('Y') }}</span>
+						</div>
+					</div>
+				</footer>
+
+			</div>
+
+		</div>
+		<!-- /.content-wrapper -->
+
+	</div>
+	<!-- /#wrapper -->
+
+	<!-- Scroll to Top Button-->
+	<a class="scroll-to-top rounded" href="#page-top">
+		<i class="fas fa-angle-up"></i>
+	</a>
+
+	<!-- Logout Modal-->
+	<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Effettuare il Logout?</h5>
+					<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-body">Clicca "Logout" se vuoi terminare la sessione.</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancella</button>
+					<a class="btn sfondo-rosso" href="{{AppPath}}AdminAccount/Logout">Logout</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var url = '{{ AppPath }}';
+	</script>
+
+	<!-- Bootstrap core JavaScript-->
+	<script src="{{AppPath}}vendor/jquery/jquery.min.js"></script>
+	<script src="{{AppPath}}vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Core plugin JavaScript-->
+	<script src="{{AppPath}}vendor/jquery-easing/jquery.easing.min.js"></script>
+
+	<!-- Page level plugin JavaScript-->
+	<script src="{{AppPath}}vendor/chart.js/Chart.min.js"></script>
+	<script src="{{AppPath}}vendor/datatables/jquery.dataTables.js"></script>
+	<script src="{{AppPath}}vendor/datatables/dataTables.bootstrap4.js"></script>
+
+	<!-- Custom scripts for all pages-->
+	<script src="{{AppPath}}js/sb-admin.min.js"></script>
+
+	<!-- Datepicker -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.css" />
+
+	<!-- Demo scripts for this page-->
+	<!--<script src="{{AppPath}}js/demo/datatables-demo.js"></script>-->
+	<!--<script src="{{AppPath}}js/demo/chart-area-demo.js"></script>-->
+
+	{% block scripts %}
+	{% endblock %}
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			// Datepicker
+			$('.datepicker').prop("autocomplete", "off").datepicker({
+				format: 'dd/mm/yyyy'
+			});
+		});
+	</script>
+
+</body>
+
+</html>

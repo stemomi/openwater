@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+
+{% block title %}Registrazione{% endblock %}
+
+{% block body %}
+
+<div class="container">
+  	<div class="card mx-auto mt-5">
+		<div class="card-header">Registrazione</div>
+
+		<div class="card-body">
+
+		  	<div class="col-md-12 p-3">
+				{% if EmailEsistente == 1 %} <div class="text-danger text-center">Email già in uso, impossibile effettuare l'iscrizione!</div> {% endif %}
+		  	</div>
+
+		  	<form action="{{AppPath}}Account/RegisterConfirm" method="post">
+
+                <input type="hidden" id="anno-data-nascita-massima" value="{{ anno_data_nascita_massima }}">
+
+				<div class="form-group row">
+
+				  	<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Nome/Name<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+					  		<input 
+					  			type="text" 
+					  			class="form-control" 
+					  			name="Nome" 
+					  			placeholder="Nome" 
+					  			required 
+					  			autofocus
+					  		>
+						</div>
+				  	</div>
+
+				  	<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Cognome/Surname<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+					  		<input 
+					  			type="text" 
+					  			class="form-control" 
+					  			name="Cognome" 
+					  			placeholder="Cognome" 
+					  			required
+					  		>
+						</div>
+				  	</div>
+				</div>
+
+				<div class="form-group row">
+			  		<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Email<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="email" 
+				  				class="form-control" 
+				  				name="Email" 
+				  				placeholder="Email" 
+				  				required
+				  			>
+						</div>
+			  		</div>
+
+			  		<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Password<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="password" 
+				  				class="form-control" 
+				  				name="Password" 
+				  				placeholder="Password" 
+				  				required
+				  			>
+						</div>
+			  		</div>
+
+			  		<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Numero di telefono/Phone<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="number"
+						 		oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"
+						 		onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"
+						 		class="form-control" 
+						 		name="Telefono"
+						 		required
+						 	>
+						</div>
+			  		</div>
+				</div>
+
+				<div class="form-group row">
+
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Comune/City<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="text" 
+				  				class="form-control" 
+				  				name="Comune" 
+				  				placeholder="Comune" 
+				  				required
+				  			>
+						</div>
+			  		</div>
+			
+				  	<div class="col-md-2 p-3">
+						<div class="text-center p-1 etichetta">CAP/Zip code<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+					  		<input 
+					  			type="text" 
+					  			class="form-control" 
+					  			name="CAP" 
+					  			placeholder="CAP" 
+					  			required
+					  		>
+						</div>
+				  	</div>
+
+				  	<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Provincia/Province<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+					  		<select class="form-control" name="IDProvincia" required>
+								<option value="">Seleziona Provincia</option>
+								{% for provincia in ProvinceItaliane %}
+						  			<option value="{{ provincia.ID }}" {% if Utente.PI_ID == provincia.ID %}selected{% endif %}>{{ provincia.nome}}</option>
+								{% endfor %}
+					  		</select>
+						</div>
+				  	</div>
+
+				</div>
+
+				<div class="form-group row">
+
+				  	<div class="col-md-9 p-3">
+						<div class="text-center p-1 etichetta">Via/Address<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+					  		<input 
+					  			type="text" 
+					  			class="form-control" 
+					  			name="Via" 
+					  			placeholder="Via" 
+					  			required
+					  		>
+						</div>
+				  	</div>
+
+			  		<div class="col-md-3 p-3">
+				 		<div class="text-center p-1 etichetta">N°<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="text" 
+				  				class="form-control" 
+				  				name="NumeroCivico" 
+				  				placeholder="Numero Civico" 
+				  				required
+				  			>
+						</div>
+			  		</div>
+				</div>
+
+				<div class="form-group row">
+
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Data di nascita/Birth date<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="text" 
+				  				class="form-control datepicker" 
+				  				name="DataNascita" 
+				  				id="data-nascita" 
+				  				required
+				  			>
+						</div>
+                        <div class="form-label-group" id="dichiarazione-iscritto-ha-10-anni" hidden>
+                            <input type="checkbox" id="dichiarazione-iscritto-ha-10-anni-checkbox" name="dichiarazione_iscritto_ha_10_anni_checkbox">
+                            <label class="ml-2">Dichiaro che al momento della gara l'iscritto ha compiuto 10 anni</label>
+                        </div>
+			  		</div>
+
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Luogo di nascita/Birth place<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="text" 
+				  				class="form-control" 
+				  				name="LuogoNascita" 
+				  				required
+				  			>
+						</div>
+			  		</div>
+				</div>
+
+				<div class="form-group row">
+				  
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Sesso/Sex</div>
+						<div class="form-label-group">
+				  			<select class="form-control" name="Sesso">
+								<option value="1">Maschio</option>
+								<option value="2">Femmina</option>
+				  			</select>
+						</div>
+			  		</div>
+
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Squadra/Team</div>
+						<div class="form-label-group">
+				  			<select class="form-control" name="IDSquadra">
+								<option value="0">Nessuna squadra</option>
+								{% for squadra in Squadre %}
+					  				<option value="{{ squadra.ID }}" {% if squadra.ID == Utente.IDSquadra %} selected {% endif %}>{{ squadra.nome }}</option>
+								{% endfor %}
+				  			</select>
+						</div>
+						<div class="text-center">
+							NB se non si ha nessuna squadra scegliere "nessuna squadra"
+						</div>
+			  		</div>
+
+				</div>
+
+				<div class="form-group row">
+
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Taglia maglietta/T-shirt size</div>
+						<div class="form-label-group">
+					  		<select class="form-control" name="TagliaMaglietta">
+								<option value="S">S</option>
+								<option value="M">M</option>
+								<option value="L">L</option>
+								<option value="XL">XL</option>
+								<option value="XXL">XXL</option>
+					  		</select>
+						</div>
+			  		</div>
+
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Donatore Avis/Avis Donor</div>
+						<div class="form-label-group">
+				  			<select class="form-control" name="DonatoreAvis">
+								<option value="No">No</option>
+								<option value="Si">Si</option>
+				  			</select>
+						</div>
+			  		</div>
+				</div>
+
+				<div class="form-group row">
+
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Codice fiscale (Se Italiano)</div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="text" 
+				  				maxlength="16" 
+				  				class="form-control" 
+				  				name="CodiceFiscale" 
+				  				id="CodiceFiscale" 
+				  				value="{{ Utente.codice_fiscale }}"
+				  			>
+						</div>
+			  		</div>
+
+			  		<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Paese estero (Se Straniero)</div>
+						<div class="form-label-group">
+				  			<input 
+				  				type="text" 
+				  				class="form-control" 
+				  				name="PaeseEstero" 
+				  				id="PaeseEstero" 
+				  				value="{{ Utente.paese_estero }}"
+				  			>
+						</div>
+			  		</div>
+				</div>
+
+				<div class="form-group row">
+
+			  		<div class="col-md-4 m-auto">
+						<button type="button" id="espandi_genitore" class="btn sfondo-rosso btn-block">Dati genitore<i class="fa fa-angle-right p-2" aria-hidden="true"></i></button>
+			  		</div>
+				</div>
+
+				<div class="dati-genitore-nascosti">
+
+			  		<div class="form-group row">
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Nome e cognome</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="NomeCognomeGenitore">
+				  			</div>
+						</div>
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Data di nascita</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control datepicker" name="DataNascitaGenitore">
+				  			</div>
+						</div>
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Luogo di nascita</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="LuogoNascitaGenitore">
+				  			</div>
+						</div>
+			  		</div>
+
+			  		<div class="form-group row">
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Email</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="EmailGenitore">
+				  			</div>
+						</div>
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Telefono</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="TelefonoGenitore">
+				  			</div>
+						</div>
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">CAP</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="CAPGenitore">
+				  			</div>
+						</div>
+			  		</div>
+
+			  		<div class="form-group row">
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Comune</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="ComuneGenitore">
+				  			</div>
+						</div>
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Provincia</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="ProvinciaGenitore">
+				  			</div>
+						</div>
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Via</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="ViaGenitore">
+				  			</div>
+						</div>
+			 	 	</div>
+
+			  		<div class="form-group row">
+
+						<div class="col-md-4 p-3">
+				  			<div class="text-center p-1 etichetta">Numero civico</div>
+				  			<div class="form-label-group">
+								<input type="text" class="form-control" name="NumeroCivicoGenitore">
+				  			</div>
+						</div>
+
+						<div class="col-md-4 p-3">
+					  		<div class="text-center p-1 etichetta">Rappresentante legale</div>
+					  		<div class="form-label-group">
+								<input type="text" class="form-control" name="RappresentanteLegaleGenitore">
+					  		</div>
+						</div>
+				  	</div>
+				</div>
+
+				<div class="col-lg-12 my-5 text-center" id="ErroreForm"></div>
+
+				<div class="col-md-3 m-auto">
+					<button type="button" id="ConfermaButton" class="btn btn-success btn-block mt-5">Conferma</button>
+					<button 
+						type="submit" 
+						id="ConfermaSubmit" 
+						class="btn btn-success btn-block mt-5" 
+						hidden
+					>
+						Conferma
+					</button>
+				</div>
+
+				<div class="text-center">
+			  		<a class="d-block small mt-3" href="{{AppPath}}Account/Login">Login</a>
+			  		<a class="d-block small mt-3" href="{{AppPath}}Account/ForgotPassword">Recupera Password</a>
+				</div>
+		  	</form>
+		</div>
+  	</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+  	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			// Datepicker
+			$('.datepicker').datepicker(
+			{
+				format: 'dd/mm/yyyy'
+			});
+
+			// Mostra/Nascondi genitore
+			var espandi_genitore_flag = 0;
+			$('.dati-genitore-nascosti').slideUp(0);
+
+			$(document).on('click', '#espandi_genitore', function()
+			{
+				if (espandi_genitore_flag == 0)
+				{
+				  	$('.dati-genitore-nascosti').slideDown('slow');
+				  	$('#espandi_genitore i').removeClass('flip0').toggleClass('flip90');
+				  	espandi_genitore_flag = 1;
+				}
+				else
+				{
+					$('.dati-genitore-nascosti').slideUp('slow');
+					$('#espandi_genitore i').removeClass('flip90').toggleClass('flip0');
+					espandi_genitore_flag = 0;
+				}
+			});
+		});
+  	</script>
+
+    <script src="{{AppPath}}js/account/validazione_form.js?v=1.000002'"></script>
+{% endblock %}

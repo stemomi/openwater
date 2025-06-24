@@ -1,0 +1,83 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Carica Risultati Staffette{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="#">Gare</a>
+      <li class="breadcrumb-item active">Carica risultati staffette</li>
+    </li>
+</ol>
+
+<form action="{{AppPath}}AdminGare/CaricaRisultatiStaffetteConfirm" method="post" enctype="multipart/form-data">
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3 p-3">
+            <div class="text-center p-1 etichetta">Scegli gara</div>
+            <select class="form-control" name="IDGara" required>
+                <option value="">Seleziona gara</option>
+                {% for gara in ListaGareAperte %}
+                    <option value="{{ gara.ID_gara }}">{{ gara.nome_evento }}: {{ gara.nome_gara }}</option>
+                {% endfor%}
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 p-3 text-center"></div>
+        <div class="col-md-4 p-3 text-center">
+            <div class="text-center p-1 etichetta">File CSV</div>
+            <input type="file" class="form-control" name="FileExcel" id="FileExcel">
+        </div>
+        <div class="col-md-4 p-3 text-center"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3 p-3 text-center">
+            <div class="text-center p-1 etichetta">Sovrascrivi</div>
+            <input type="checkbox" class="form-control" name="Sovrascrivi" style="height: 20px;">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 p-3 text-center m-auto">
+            <button hidden type="submit" name="ConfermaCaricaRisultati" id="ConfermaCaricaRisultati" class="btn button-azzurro btn-block mt-5">Carica</button>
+            <button type="button" id="ControllaConfermaCaricaRisultati" class="btn button-azzurro btn-block mt-5">Carica</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 p-3" id="EsitoCaricaRisultati">
+          {% if EsitoCaricaRisultati is defined %} {{ EsitoCaricaRisultati|raw }} {% endif %}
+        </div>
+    </div>
+
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_gare').click();
+        $('#menu_carica_risultati_staffette').addClass('menu-link-attivo');
+
+        // Controlla che sia stato caricato almeno un file
+        $(document).on('click', '#ControllaConfermaCaricaRisultati', function()
+        {
+            if ( $('#FileExcel').get(0).files.length === 0  && $('#FileExcelCrudo').get(0).files.length === 0 )
+            {
+                $('#EsitoCaricaRisultati').html('<div class="text-danger text-center">Nessun file selezionato!</div>');
+            }
+            else
+                $('#ConfermaCaricaRisultati').click();
+        });
+	});
+</script>
+
+{% endblock %}

@@ -1,0 +1,490 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Gare Individuali - Dettagli Risultato{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">
+    <li class="active">Gare Individuali</li>
+  </li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Profilo Partecipante</div>
+
+        <div class="card-body">
+
+          <div class="form-group row">
+
+            <div class="col-md-12 p-3">
+
+              <div class="form-label-group text-center">
+                {% if UtenteIscrizione.foto_profilo != '' %}
+                  <img src="{{AppPath}}{{ UtenteIscrizione.foto_profilo }}" class="foto_profilo rounded-circle" width="200" height="200" alt="foto profilo">
+                {% else %}
+                  <img src="{{AppPath}}img/foto_profilo_default.png" class="foto_profilo rounded-circle" width="200" height="200" alt="foto profilo">
+                {% endif %}
+              </div>
+
+            </div>
+
+            <div class="col-md-6 p-3">
+              <div class="text-center p-1 etichetta">Nome<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="Nome" value="{{ UtenteIscrizione.nome }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-6 p-3">
+              <div class="text-center p-1 etichetta">Cognome<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="Cognome" value="{{ UtenteIscrizione.cognome }}" disabled>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group row">
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Email<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="email" class="form-control" name="Email" value="{{ UtenteIscrizione.email }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Numero di telefono<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="Telefono" value="{{ UtenteIscrizione.telefono }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Sesso</div>
+              <div class="form-label-group">
+                <select class="form-control" name="Sesso" disabled>
+                  <option value="1" {% if UtenteIscrizione.sesso == 1 %}selected{% endif %}>Maschio</option>
+                  <option value="2" {% if UtenteIscrizione.sesso == 2 %}selected{% endif %}>Femmina</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group row">
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">CAP<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="CAP" value="{{ UtenteIscrizione.cap }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Comune<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="Comune" value="{{ UtenteIscrizione.comune }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Provincia<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="Provincia" value="{{ UtenteIscrizione.provincia }}" disabled>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group row">
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Via<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="Via" value="{{ UtenteIscrizione.via }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Numero civico<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="NumeroCivico" value="{{ UtenteIscrizione.numero_civico }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Data di nascita<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control datepicker" name="DataNascita" value="{% if UtenteIscrizione.data_nascita != '0000-00-00' %}{{ UtenteIscrizione.data_nascita|date("d/m/Y") }}{% endif %}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Luogo di nascita<span class="text-danger">*</span></div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="LuogoNascita" value="{{ UtenteIscrizione.luogo_nascita }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Gruppo sportivo</div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="GruppoSportivo" value="{{ UtenteIscrizione.gruppo_sportivo }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Taglia maglietta</div>
+              <div class="form-label-group">
+                <select class="form-control" name="TagliaMaglietta" disabled>
+                  <option value="S" {% if UtenteIscrizione.taglia_maglietta == 'S' %}selected{% endif %}>S</option>
+                  <option value="M" {% if UtenteIscrizione.taglia_maglietta == 'M' %}selected{% endif %}>M</option>
+                  <option value="L" {% if UtenteIscrizione.taglia_maglietta == 'L' %}selected{% endif %}>L</option>
+                  <option value="XL" {% if UtenteIscrizione.taglia_maglietta == 'XL' %}selected{% endif %}>XL</option>
+                  <option value="XXL" {% if UtenteIscrizione.taglia_maglietta == 'XXL' %}selected{% endif %}>XXL</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group row">
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Donatore Avis</div>
+              <div class="form-label-group">
+                <select class="form-control" name="DonatoreAvis" disabled>
+                  <option value="No" {% if UtenteIscrizione.donatore_avis == 'No' %}selected{% endif %}>No</option>
+                  <option value="Si" {% if UtenteIscrizione.donatore_avis == 'Si' %}selected{% endif %}>Si</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3" hidden>
+              <div class="text-center p-1 etichetta">Certificato</div>
+              <div class="form-label-group">
+                {% if UtenteIscrizione.certificato_file != '' %}
+                  <a href="{{AppPath}}{{ UtenteIscrizione.certificato_file }}" target="_blank"><div class="text-center"><i class="fa fa-file-pdf fa-2x"></i></div></a>
+                {% else %}
+                  <div class="text-center"><i class="fa fa-file-pdf fa-2x"></i></div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3" hidden>
+              <div class="text-center p-1 etichetta">Scadenza certificato</div>
+              <div class="form-label-group">
+                <input type="text" class="form-control datepicker" name="ScadenzaCertificato" value="{% if UtenteIscrizione.certificato_scadenza != '0000-00-00' %}{{ UtenteIscrizione.certificato_scadenza|date("d/m/Y") }}{% endif %}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Codice fiscale (Se Italiano)</div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="CodiceFiscale" value="{{ UtenteIscrizione.codice_fiscale }}" disabled>
+              </div>
+            </div>
+
+            <div class="col-md-4 p-3">
+              <div class="text-center p-1 etichetta">Paese estero (Se Straniero)</div>
+              <div class="form-label-group">
+                <input type="text" class="form-control" name="PaeseEstero" value="{{ UtenteIscrizione.paese_estero }}" disabled>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group row">
+
+            <div class="col-md-4 m-auto">
+              <button type="button" id="espandi_genitore" class="btn sfondo-rosso btn-block espandi_campo">Dati genitore<i class="fa fa-angle-right p-2" aria-hidden="true"></i></button>
+            </div>
+
+          </div>
+
+          <div class="dati-genitore-nascosti">
+
+            <div class="form-group row">
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Nome e cognome</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="NomeCognomeGenitore" value="{{ UtenteIscrizione.genitore_nome_cognome }}" disabled>
+                </div>
+              </div>
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Data di nascita</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control datepicker" name="DataNascitaGenitore"
+                    value="{% if UtenteIscrizione.genitore_data_nascita != '0000-00-00' %}{{ UtenteIscrizione.genitore_data_nascita|date("d/m/Y") }}{% endif %}" disabled>
+                </div>
+              </div>
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Luogo di nascita</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="LuogoNascitaGenitore" value="{{ UtenteIscrizione.genitore_luogo_nascita }}" disabled>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Email</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="EmailGenitore" value="{{ UtenteIscrizione.genitore_email }}" disabled>
+                </div>
+              </div>
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Telefono</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="TelefonoGenitore" value="{{ UtenteIscrizione.genitore_telefono }}" disabled>
+                </div>
+              </div>
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">CAP</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="CAPGenitore" value="{{ UtenteIscrizione.genitore_cap }}" disabled>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Comune</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="ComuneGenitore" value="{{ UtenteIscrizione.genitore_comune }}" disabled>
+                </div>
+              </div>
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Provincia</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="ProvinciaGenitore" value="{{ UtenteIscrizione.genitore_provincia }}" disabled>
+                </div>
+              </div>
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Via</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="ViaGenitore" value="{{ UtenteIscrizione.genitore_via }}" disabled>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Numero civico</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="NumeroCivicoGenitore" value="{{ UtenteIscrizione.genitore_numero_civico }}" disabled>
+                </div>
+              </div>
+
+              <div class="col-md-4 p-3">
+                <div class="text-center p-1 etichetta">Rappresentante legale</div>
+                <div class="form-label-group">
+                  <input type="text" class="form-control" name="RappresentanteLegaleGenitore" value="{{ UtenteIscrizione.genitore_rapp_legale }}" disabled>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+    </div>
+</div>
+
+<form action="{{ AppPath }}AdminGareIndividuali/ConfermaDettagliRisultato" method="POST">
+
+<input type="hidden" name="IDIscrizione" value="{{ Iscrizione.IGI_ID }}">
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Dettagli Risultato</div>
+        <div class="card-body">
+            <div class="form-group row">
+
+              <div class="col-md-2 p-3">
+                  <b>Data</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {{ Iscrizione.IGI_dataora }}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>Gara</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {{ Iscrizione.EI_nome }}: {{ Iscrizione.GI_nome }}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>Prezzo</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  € {{ Iscrizione.GI_prezzo|number_format(2) }}
+                  {% if Iscrizione.P_tipo == 2 %}<div class="col-lg-12 pl-0"><span class="text-danger">*</span> Maggiorazione Paypal non inclusa (importo relativo al prezzo gara)</div>{% endif %}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>Tempo</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {{ Iscrizione.RGI_tempo }}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>Località</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {{ Iscrizione.RGI_localita }}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>Provincia</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {{ Iscrizione.PI_nome }}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>Tipo Acqua</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {{ Iscrizione.RGI_tipo_acqua_nome }}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>File GPS</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {% if Iscrizione.RGI_gps_file != '' %}
+                    <a href="{{ URL_GPS_FILES }}{{ Iscrizione.RGI_gps_file }}" target="_blank"><i class="fa fa-table fa-2x"></i></a>
+                  {% else %}
+                    <i class="fa fa-table fa-2x text-black"></i>
+                  {% endif %}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>Foto GPS</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {% if Iscrizione.RGI_gps_foto != '' %}
+                    <a href="{{ URL_GPS_FOTO }}{{ Iscrizione.RGI_gps_foto }}" target="_blank"><i class="fa fa-picture-o fa-2x"></i></a>
+                  {% else %}
+                    <i class="fa fa-picture-o fa-2x text-black"></i>
+                  {% endif %}
+              </div>
+
+              <div class="col-md-2 p-3">
+                  <b>Link GPS</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  {% if Iscrizione.RGI_gps_link != '' %}
+                    <a href="{{ Iscrizione.RGI_gps_link }}" target="_blank"><i class="fa fa-map-marker fa-2x"></i></a>
+                  {% else %}
+                    <i class="fa fa-map-marker fa-2x text-black"></i>
+                  {% endif %}
+              </div>
+
+              {% if Iscrizione.P_tipo == 1 %}
+                  <div class="col-md-2 p-3">
+                      <b>File Bonifico</b>:
+                  </div>
+                  <div class="col-md-10 p-3">
+                      {% if Iscrizione.P_file != '' %}
+                        <a href="{{ AppPath }}{{ Iscrizione.P_file }}" target="_blank"><i class="fa fa-file fa-2x"></i></a>
+                      {% else %}
+                        <i class="fa fa-file fa-2x text-black"></i>
+                      {% endif %}
+                  </div>
+              {% elseif Iscrizione.P_tipo == 2 %}
+                  <div class="col-md-2 p-3">
+                      <b>ID Transazione Paypal</b>:
+                  </div>
+                  <div class="col-md-10 p-3">{{ Iscrizione.P_ID_transazione_paypal }}</div>
+              {% elseif Iscrizione.P_tipo == 3 %}
+                  <div class="col-md-2 p-3">
+                      <b>Codice Coupon</b>:
+                  </div>
+                  <div class="col-md-10 p-3">{{ Iscrizione.P_codice_coupon }}</div>
+              {% endif %}
+
+              <div class="col-md-2 p-3">
+                  <b>Stato</b>:
+              </div>
+              <div class="col-md-10 p-3">
+                  <select class="form-control" name="ConvalidaPagamento">
+                      <option value="1" {% if Iscrizione.IGI_pagato == 0 %}selected{% endif%}>Da Pagare</option>
+                      <option value="2" {% if Iscrizione.IGI_pagato == 1 and Iscrizione.IGI_convalidato == 0 %}selected{% endif%}>Pagato</option>
+                      <option value="3" {% if Iscrizione.IGI_convalidato == 1 %}selected{% endif%}>Convalidato</option>
+                  </select>
+              </div>
+
+              <div class="col-lg-3 m-auto">
+                  <button type="submit" class="btn button-azzurro btn-block mt-5">Salva</button>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+
+<div class="row mb-5">
+    <div class="col-lg-3 m-auto">
+      <a href="{{ AppPath }}AdminGareIndividuali/Risultati">
+        <button type="button" class="btn button-azzurro btn-block mt-5">Indietro</button>
+      </a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+  $(document).ready(function()
+  {
+      if ($(window).width() > 768) $('#dropdown_gare_individuali').click();
+      $('#menu_risultati_individuali').addClass('menu-link-attivo');
+
+      // Mostra/Nascondi genitore
+      var espandi_genitore_flag= 0;
+      $('.dati-genitore-nascosti').slideUp(0);
+
+      $(document).on('click', '#espandi_genitore', function()
+      {
+          if (espandi_genitore_flag == 0)
+          {
+            $('.dati-genitore-nascosti').slideDown('slow');
+            $('.espandi_campo i').removeClass('flip0').toggleClass('flip90');
+            espandi_genitore_flag= 1;
+          }
+          else
+          {
+            $('.dati-genitore-nascosti').slideUp('slow');
+            $('.espandi_campo i').removeClass('flip90').toggleClass('flip0');
+            espandi_genitore_flag= 0;
+          }
+      });
+      
+  });
+</script>
+
+{% endblock %}

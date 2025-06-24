@@ -1,0 +1,233 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Scarica CSV Iscrizioni{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <li class="active">Iscrizioni</li>
+	</li>
+</ol>
+
+<div class="row">
+
+    <div class="col-md-2"></div>
+
+    <div class="col-md-6 p-3">
+        <div class="text-center p-1 etichetta">Scegli evento</div>
+        <select class="form-control" id="IDEvento">
+            <option value="">Seleziona evento</option>
+            {% for evento in ListaEventi %}
+                <option value="{{ evento.ID }}">{{ evento.nome }}</option>
+            {% endfor%}
+        </select>
+    </div>
+
+    <div class="col-md-2 p-3 text-center my-auto">
+        <button type="button" id="GeneraCSVEventi" class="btn btn-primary">Genera CSV</button>
+    </div>
+
+    <div class="col-md-2 p-3 text-center my-auto">
+        <button type="button" id="GeneraCSVNewsletterEventi" class="btn btn-primary">CSV Newsletter</button>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-2"></div>
+
+    <div class="col-md-6 p-3">
+        <div class="text-center p-1 etichetta">Scegli gara</div>
+        <select class="form-control" id="IDGara">
+            <option value="">Seleziona gara</option>
+            {% for gara in ListaGareAperte %}
+                <option value="{{ gara.ID_gara }}">{{ gara.nome_evento }}: {{ gara.nome_gara }}</option>
+            {% endfor%}
+        </select>
+    </div>
+
+    <div class="col-md-2 p-3 text-center my-auto">
+        <button type="button" id="GeneraCSVGare" class="btn btn-primary">Genera CSV</button>
+    </div>
+
+    <div class="col-md-2 p-3 text-center my-auto">
+        <button type="button" id="GeneraCSVNewsletterGare" class="btn btn-primary">CSV Newsletter</button>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-md-2"></div>
+
+    <div class="col-md-6 p-3">
+        <div class="text-center p-1 etichetta">Scegli staffetta</div>
+        <select class="form-control" id="IDGaraStaffetta">
+            <option value="">Seleziona staffetta</option>
+            {% for gara_staffetta in ListaGareStaffette %}
+                <option value="{{ gara_staffetta.ID_gara }}">{{ gara_staffetta.nome_evento }}: {{ gara_staffetta.nome_gara }}</option>
+            {% endfor%}
+        </select>
+    </div>
+
+    <div class="col-md-2 p-3 text-center my-auto">
+        <button type="button" id="GeneraCSVGareStaffette" class="btn btn-primary">Genera CSV</button>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+        if ($(window).width() > 768) $('#dropdown_iscrizioni').click();
+		$('#menu_scarica_csv_iscrizioni').addClass('menu-link-attivo');
+
+        // Genera CSV per evento
+        $(document).on('click', '#GeneraCSVEventi', function()
+        {
+            var IDEvento= $('#IDEvento').val();
+
+            if (IDEvento != '')
+            {
+                $.ajax({
+                        type: 'POST',
+                        url: URL + 'AdminAccount/ajaxGeneraCSVIscrizioniPerGara',
+                        data: {
+                                GeneraCSV: "Evento",
+                                IDEvento: IDEvento
+                              },
+                        dataType: 'json',
+                        cache: false,
+                        success: function(result)
+                        {
+                            if (result['Trovate'] == 1)
+                                window.location.href= result['LinkCSV'];
+                            else
+                                alert('Nessuna iscrizione trovata per questo evento!');
+                        }
+                    });
+            }
+        });
+
+        // Genera CSV newsletter per evento
+        $(document).on('click', '#GeneraCSVNewsletterEventi', function()
+        {
+            var id_evento = $('#IDEvento').val();
+
+            if (id_evento != '')
+            {
+                $.ajax(
+                {
+                    type: 'POST',
+                    url: URL + 'AdminAccount/ajaxGeneraCSVNewsletterPerGara',
+                    data: 
+                    {
+                        genera_csv: "Evento",
+                        id_evento: id_evento
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(result)
+                    {
+                        if (result['Trovate'] == 1)
+                            window.location.href= result['LinkCSV'];
+                        else
+                            alert('Nessuna iscrizione trovata per questo evento!');
+                    }
+                });
+            }
+        });
+
+        // Genera CSV per gara
+        $(document).on('click', '#GeneraCSVGare', function()
+        {
+            var IDGara= $('#IDGara').val();
+
+            if (IDGara != '')
+            {
+                $.ajax({
+                        type: 'POST',
+                        url: URL + 'AdminAccount/ajaxGeneraCSVIscrizioniPerGara',
+                        data: {
+                                GeneraCSV: "Gara",
+                                IDGara: IDGara
+                              },
+                        dataType: 'json',
+                        cache: false,
+                        success: function(result)
+                        {
+                            if (result['Trovate'] == 1)
+                                window.location.href= result['LinkCSV'];
+                            else
+                                alert('Nessuna iscrizione trovata per questa gara!');
+                        }
+                    });
+            }
+        });
+
+        // Genera CSV newsletter per gara
+        $(document).on('click', '#GeneraCSVNewsletterGare', function()
+        {
+            var id_gara = $('#IDGara').val();
+
+            if (id_gara != '')
+            {
+                $.ajax(
+                {
+                    type: 'POST',
+                    url: URL + 'AdminAccount/ajaxGeneraCSVNewsletterPerGara',
+                    data: 
+                    {
+                        genera_csv: "Gara",
+                        id_gara: id_gara
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(result)
+                    {
+                        if (result['Trovate'] == 1)
+                            window.location.href= result['LinkCSV'];
+                        else
+                            alert('Nessuna iscrizione trovata per questa gara!');
+                    }
+                });
+            }
+        });
+
+        // Genera CSV per staffetta
+        $(document).on('click', '#GeneraCSVGareStaffette', function()
+        {
+            var IDGaraStaffetta= $('#IDGaraStaffetta').val();
+
+            if (IDGaraStaffetta != '')
+            {
+                $.ajax({
+                        type: 'POST',
+                        url: URL + 'AdminAccount/ajaxGeneraCSVStaffetteGara',
+                        data: {
+                                GeneraCSV: "GaraStaffetta",
+                                IDGaraStaffetta: IDGaraStaffetta
+                              },
+                        dataType: 'json',
+                        cache: false,
+                        success: function(result)
+                        {
+                            if (result['Trovate'] == 1)
+                                window.location.href= result['LinkCSV'];
+                            else
+                                alert('Nessuna iscrizione trovata per questa staffetta!');
+                        }
+                    });
+            }
+        });
+
+	});
+</script>
+
+{% endblock %}

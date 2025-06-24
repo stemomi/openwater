@@ -1,0 +1,25 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Account - Panoramica{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <li class="active">Panoramica</li>
+	</li>
+</ol>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		$('#menu_panoramica').addClass('menu-link-attivo');
+	});
+</script>
+
+{% endblock %}

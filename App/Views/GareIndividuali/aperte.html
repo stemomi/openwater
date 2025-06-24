@@ -1,0 +1,246 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Gare Individuali - Gare Aperte{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Gare Individuali</a>
+	  <li class="breadcrumb-item active">Aperte</li>
+	</li>
+</ol>
+
+<form action="{{AppPath}}GareIndividuali/ConfermaIscrizioni" method="post">
+
+{% for evento in Eventi %}
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header titolo-evento">
+        	{{ evento.0.nome_evento }}
+    	</div>
+
+        <div class="card-body p-4">
+
+    		{% for gara in evento %}
+
+				{% set PrezzoStimato = gara.prezzo %}
+
+    		<div class="row">
+
+	    		<div class="col-md-12 align-self-center">
+				    <div class="card">
+				        <div class="card-header sfondo-azzurro_tema border-style-solid">
+
+					        <span class="mr-2">{{ gara.nome_gara }}</span>
+					        <span class="text-warning">€ {{ PrezzoStimato }}</span>
+
+					        <span class="float-right">
+					        	{% if gara.iscritto == 1 and gara.pagato == 1 and gara.RGI_ID > 0 %}
+					        		<button type="button" class="btn btn-success controlla_disabled ButtonIscrivitiAncora"
+					        				id_gara="{{ gara.ID_gara }}"
+					        				value="{{ PrezzoStimato }}"
+					        		>Nuovo Tentativo</button>
+					        	{% elseif gara.iscritto == 1 and gara.pagato == 1 %}
+					        		<button type="button" class="btn btn-warning" disabled>Pagato/Paid</button>
+					        		<a href="{{ AppPath }}GareIndividuali/CaricaRisultato/{{ gara.ID_iscrizione }}">
+					        			<button type="button" class="btn btn-warning">Carica risultato</button>
+					        		</a>
+					        	{% elseif gara.iscritto == 1 and gara.pagato == 0 %}
+					        		<button type="button" class="btn btn-danger PrezziIscrizioni"
+					        				value="{{ PrezzoStimato }}"
+					        				disabled>Iscritto/Ok</button>
+					        	{% else %}
+					        		<button type="button" class="btn btn-success controlla_disabled ButtonIscriviti"
+					        				id_gara="{{ gara.ID_gara }}"
+					        				value="{{ PrezzoStimato }}"
+					        		>Iscriviti/Sign in</button>
+					        	{% endif %}
+					        </span>
+			        
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+
+			{% endfor %}
+        	  
+        </div>
+
+    </div>
+</div>
+
+{% endfor %}
+
+<div class="container col-md-12 mb-4">
+    <div class="card mx-auto mt-5">
+        <div class="card-header text-center">
+        	<span class="titolo-evento">Totale da pagare gare individuali</span>
+			<span class="float-right mt-1 mr-4" id="Totale"></span>
+		</div>
+    </div>
+</div>
+
+<div class="row">
+	<div class="col-lg-10 m-auto p-3">
+		<p><strong>DICHIARAZIONE /DECLARATION</strong> (richiesto):
+        <div class="row">
+        <div class="col">
+		<small>Il sottoscritto dichiara, sotto la propria responsabilità che:
+		- Sono veri i dati sopraindicati ed è in buona salute; 
+		- E' abile nuotatore ed è fisicamente idoneo alla partecipazione della manifestazione sportiva non agonistica denominata ITALIAN OPEN WATER TOUR
+		- Verificata la validità delle condizioni di sicurezza predisposte, solleva gli Organizzatori della manifestazione da qualsiasi responsabilità civile e penale per qualsiasi danno materiale, fisico o morale, diretto o indiretto che potesse derivare al Partecipante medesimo da eventuali incidenti prima, durante e dopo lo svolgimento della manifestazione ad eccezione di quanto previsto dalla polizza assicurativa legata all’evento.
+		- Da il proprio consenso, ai sensi e per gli effetti della legge 196/2003, che i dati personali possano essere trattati anche con strumenti informatici esclusivamente nell’ambito della manifestazione sportiva per la quale la presente dichiarazione viene resa. Si da inoltre il consenso per l’utilizzo e la pubblicazione di tutte le immagini inerenti la manifestazione.
+		- Prende atto che, in caso di rinuncia, ovvero di annullamento della manifestazione per cause di forza maggiore (quali avverse condizioni meteo o altre non prevedibili) la quota di iscrizione versata non verrà restituita
+		- Di aver preso visione del regolamento della gara e dei consigli utili (nei regolamenti di ogni evento (<a href="http://www.italianopenwatertour.com/regolamenti" target="_blank">Regolamenti 2020</a>) (<a href="https://italianopenwatertour.com/wp-content/uploads/2020/06/Regolamento-2.pdf" target="_blank">All you need is swim</a>) e di accettarli incondizionatamente
+		- Prende atto che il controllo della corretta avvenuta iscrizione ( pagamento + certificato medico) sia a carico dell’Iscritto e non dell’Organizzazione mediante la lista pubblicata on line su www.italianopewatertour.com 
+		- Richiedo quindi di essere ammesso quale Socio di ASD I Glaciali per poter partecipare alle attività dell’Associazione. L’assemblea dei Soci annuale è fissata per Mercoledì 9 Dicembre 2020 presso il Circolo Risorgimento di Gazzada Schianno in via Roma, 63 in prima convocazione alle ore 8.00 ed in seconda convocazione alle ore 9.30.
+		- Approvo specificatamente ai sensi  degli artt. 1341 e 1342 c.c. di assumere ogni responsabilità che possa derivare dalla partecipazione alla manifestazione sportiva, di liberare ed esonerare la ASD I Glaciali, i loro rappresentanti legali, i componenti del Comitato organizzatore e i volontari da ogni responsabilità civile e penale, anche oggettiva, diretta o indiretta.
+		</small>
+		</p>
+        </div>
+        <div class="col">
+        <p>
+<small>The undersigned declares, under his/her own responsibility that:
+- The over-mentioned information are true and he/she is healthy.
+
+- He/she is a skilled swimmer and he/she is physically fit in order to take part in the not competitive sport event denominated ITALIAN OPEN WATER TOUR.
+
+- He/she has verified the validity of the predisposed safety conditions, he/she declines the Organizers of the event from any civil and criminal liability for any material, physical or moral, direct or indirect damage that could derive to the Participant from possible accidents before, during and after the implementation of the event apart from what is included in the event insurance policy.
+
+- He/she agrees, according to and for the effects of the law 196/2003, that the personal information can exclusively be processed by IT tools within the context of the sport event for which the present declaration is made. He/she agrees as well that all the inherent images about the event can be used and published.
+-  He/she is aware that, in case of renouncement, or if the event is cancelled because of reasons of force majeure (such as very bad weather conditions or other not predictable reasons) the registration fee won't be returned. 
+- He/she has carefully read the rules of the competition and the useful suggestions in the rules of every event (<a href="http://www.italianopenwatertour.com/regolamenti" target="_blank">Rules</a>) (<a href="https://italianopenwatertour.com/wp-content/uploads/2020/06/Regolamento-2.pdf" target="_blank">All you need is swim</a>) and to unconditionally accept them.
+- He/she is aware that the verification of the correct registration (payment + medical certificate) depends on the affiliate member and not on the Organization through the online published list on www.italianopewatertour.com
+
+- Therefore I require to be admitted as Associate member of Glacial ASD in order to participate in the activities of the Association. The annual members meeting is scheduled on Wednesday 9 December at the Circolo Risorgimento 63, Via Roma, in Gazzada Schianno (VA) (first convocation at 8.00 a.m or p.m. ? and second one at 9.30 a.m or p.m. ?).
+
+- I specifically approve to the senses of the art. 1341 and 1342 c.c. and assume every responsibility that can derive from the participation in the sport event, to free and to exonerate the ASD I Glaciali, their legal representatives, the members of the organizing Committee and the volunteers from every civil and criminal liability, objective, direct or indirect as well.
+
+</small>
+        </div>
+        </div >
+		<p align="center"><input type="checkbox" name="accetto" required>Accetto/Accept</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-lg-3 m-auto p-3">
+	  <button type="button" class="btn button-azzurro btn-block mt-5" id="ConfermaIscrizioni">Conferma Iscrizioni</button>
+	  <button type="submit" id="ConfermaIscrizioniForm" hidden>Conferma Form</button>
+	</div>
+</div>
+
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_gare_individuali').click();
+
+		AggiornaTotale();
+
+		// Submit ConfermaIscrizioni
+		$(document).on('click', '#ConfermaIscrizioni', function()
+		{
+			$('#ConfermaIscrizioniForm').click();
+		});
+
+		// Iscrizione
+		$(document).on('click', '.ButtonIscriviti', function()
+		{
+			var IDGara= $(this).attr('id_gara');
+			var NomeGara= $(this).attr('nome_gara');
+			var PrezzoGara= $(this).val();
+			var Base= $(this).parent().parent().parent().parent().parent().parent();
+			
+			$(this).parent().html('<button type="button" class="btn btn-danger ButtonDisiscriviti PrezziIscrizioni"\
+								   			id_gara="' + IDGara + '"\
+								   			value="' + PrezzoGara + '"\
+								    >Rimuovi/Remove</button>\
+								    <input type="hidden" name="IDGareIscrizioni[]" value="' + IDGara + '">');
+			
+			$(Base).find('.controlla_disabled').prop("disabled", true);
+			
+			AggiornaTotale();
+		});
+
+		// Rimuovi Iscrizione
+		$(document).on('click', '.ButtonDisiscriviti', function()
+		{
+			var IDGara= $(this).attr('id_gara');
+			var PrezzoGara= $(this).val();
+			var Base= $(this).parent().parent().parent().parent().parent().parent();
+
+			$(this).parent().html('<button type="button" class="btn btn-success controlla_disabled ButtonIscriviti"\
+								   			id_gara="' + IDGara + '"\
+								   			value="' + PrezzoGara + '"\
+								    >Iscriviti/Sign in</button>');
+
+			$(Base).find('.controlla_disabled').prop("disabled", false);
+
+			AggiornaTotale();
+		});
+
+		// Iscriviti ancora 
+		$(document).on('click', '.ButtonIscrivitiAncora', function()
+		{
+			var IDGara= $(this).attr('id_gara');
+			var NomeGara= $(this).attr('nome_gara');
+			var PrezzoGara= $(this).val();
+			var Base= $(this).parent().parent().parent().parent().parent().parent();
+			
+			$(this).parent().html('<button type="button" class="btn btn-danger ButtonDisiscrivitiAncora PrezziIscrizioni"\
+								   			id_gara="' + IDGara + '"\
+								   			value="' + PrezzoGara + '"\
+								    >Rimuovi/Remove</button>\
+								    <input type="hidden" name="IDGareIscrizioni[]" value="' + IDGara + '">');
+			
+			$(Base).find('.controlla_disabled').prop("disabled", true);
+			
+			AggiornaTotale();
+		});
+
+		// Rimuovi Iscrizione da iscriviti ancora
+		$(document).on('click', '.ButtonDisiscrivitiAncora', function()
+		{
+			var IDGara= $(this).attr('id_gara');
+			var PrezzoGara= $(this).val();
+			var Base= $(this).parent().parent().parent().parent().parent().parent();
+
+			$(this).parent().html('<button type="button" class="btn btn-success controlla_disabled ButtonIscrivitiAncora"\
+					        				id_gara="' + IDGara + '"\
+					        				value="' + PrezzoGara + '"\
+					        		>Nuovo Tentativo</button>');
+
+			$(Base).find('.controlla_disabled').prop("disabled", false);
+
+			AggiornaTotale();
+		});
+
+		function AggiornaTotale()
+		{
+			var Totale= 0.00;
+
+			$('.PrezziIscrizioni').each(function()
+			{
+			    Totale += parseFloat(this.value);
+			});
+
+			Totale= parseFloat(Totale).toFixed(2);
+
+			$('#Totale').text('€ ' + Totale);
+		}
+		
+	});
+</script>
+
+{% endblock %}

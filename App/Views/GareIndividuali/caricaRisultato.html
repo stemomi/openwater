@@ -1,0 +1,147 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Gare Individuali - Carica Risultato{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Gare Individuali</a>
+	  <li class="breadcrumb-item active">Carica Risultato</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Carica Risultato</div>
+        <div class="card-body">
+
+        	<form action="{{AppPath}}GareIndividuali/CaricaRisultatoConfirm" method="post" enctype="multipart/form-data">
+
+        		<input type="hidden" name="IDIscrizione" value="{{ Iscrizione.ID }}">
+
+				<div class="form-group row justify-content-center">
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Tempo<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="time" step="1" class="form-control" name="Tempo" id="Tempo" required>
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Tipo Acqua<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+						  <select class="form-control" name="TipoAcqua" id="TipoAcqua" required>
+						    <option value="">Seleziona tipo di acqua</option>
+						    <option value="1">Mare</option>
+						    <option value="2">Lago</option>
+						    <option value="3">Piscina</option>
+						  </select>
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Località (Specificare anche nome lago o piscina)<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="text" class="form-control" name="Localita" id="Localita" required>
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Provincia<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+						  <select class="form-control" name="IDProvincia" id="IDProvincia" required>
+						    <option value="">Seleziona Provincia</option>
+						    {% for provincia in ProvinceItaliane %}
+						      <option value="{{ provincia.ID }}">{{ provincia.nome}}</option>
+						    {% endfor %}
+						  </select>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+		                  <div class="text-center p-1 etichetta">File GPS</div>
+		                  <div class="form-label-group">
+		                    <input type="file" class="form-control" name="FileGPS" id="FileGPS">
+		                  </div>
+		             </div>
+
+		             <div class="col-md-4 p-3">
+		                  <div class="text-center p-1 etichetta">Foto Partenza O Arrivo</div>
+		                  <div class="form-label-group">
+		                    <input type="file" class="form-control" name="FotoGPS" id="FotoGPS">
+		                  </div>
+		             </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Link GPS</div>
+		                <div class="form-label-group">
+		                  <input type="text" class="form-control" name="LinkGPS" id="LinkGPS">
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+					<div class="col-lg-12 p-3 m-auto text-center">
+						<input type="checkbox" id="FlagCaricamentoSenzaFile"> Non carico file nuotata e accetto di non comparire nella classifica finale (mantengo status sostenitore e partecipante per l’estrazione dei premi)
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-lg-12 m-auto text-center" id="ErroreCaricaRisultato"></div>
+				</div>
+
+				<div class="col-lg-3 m-auto">
+	              <button type="button" id="ConfermaCaricaRisultato" class="btn button-azzurro btn-block mt-5">Conferma</button>
+	              <button type="submit" id="SubmitCaricaRisultato" name="SubmitCaricaRisultato" class="btn button-azzurro btn-block mt-5" hidden>Conferma</button>
+	            </div>
+
+	        </form>
+
+    	</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_gare_individuali').click();
+
+		// Submit form
+		$(document).on('click', '#ConfermaCaricaRisultato', function()
+		{
+			var FlagCaricamentoSenzaFile = $('#FlagCaricamentoSenzaFile').is(":checked");
+
+			if ( $('#FileGPS').get(0).files.length === 0  && $('#FotoGPS').get(0).files.length === 0 && $('#LinkGPS').val() == '' )
+				$('#ErroreCaricaRisultato').html('<span class="text-danger">Inserisci i dati GPS usando almeno 1 dei 3 relativi campi!</span>');
+			else
+			{
+				if ($('#FileGPS').get(0).files.length === 0 && FlagCaricamentoSenzaFile == false)
+					$('#ErroreCaricaRisultato').html('<span class="text-danger">Il caricamento del file GPS è obbligatorio, tranne rinunciando di comparire in classifica (Confermando il checkbox)</span>');
+				else
+				{
+					$('#ErroreCaricaRisultato').html('');
+					$('#SubmitCaricaRisultato').click();
+				}
+			}
+		});
+	});
+
+</script>
+
+{% endblock %}

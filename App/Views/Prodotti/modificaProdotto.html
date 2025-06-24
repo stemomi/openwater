@@ -1,0 +1,159 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Modifica Prodotto{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	   <a href="{{AppPath}}Prodotti/Lista">Prodotti</a>
+	   <li class="breadcrumb-item active">Modifica Prodotto</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Modifica Prodotto</div>
+
+        <div class="card-body">
+
+          <form action="{{AppPath}}Prodotti/ModificaProdottoConferma" method="post" enctype="multipart/form-data">
+
+            <input type="hidden" name="prodotto_id" value="{{ Prodotto.ID }}">
+
+            <div class="form-group row justify-content-center">
+
+                <div class="col-md-6 p-3">
+
+                    <div class="form-label-group text-center">
+                    {% if Prodotto.foto != '' %}
+                        <img src="{{AppPath}}{{ Prodotto.foto }}" class="foto_profilo rounded-circle" width="200" height="200" alt="foto prodotto">
+                    {% else %}
+                        <img src="{{AppPath}}img/no_image_available.png" class="foto_profilo rounded-circle" width="200" height="200" alt="foto prodotto">
+                    {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 p-3">
+
+                    <div class="col-md-12 p-3 text-center">
+                        <div class="text-center p-1 etichetta">Foto</div>
+                        <div class="form-label-group">
+                            <input type="file" class="form-control" name="foto">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-group row justify-content-center">
+                <div class="col-md-6 p-3">
+                    <div class="text-center p-1 etichetta">Nome<span class="text-danger">*</span></div>
+                    <div class="form-label-group">
+                        <input type="text" class="form-control" name="nome" value="{{ Prodotto.nome }}" required="required" autofocus="autofocus">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row justify-content-center">
+                <div class="col-md-6 p-3">
+                    <div class="text-center p-1 etichetta">Prezzo<span class="text-danger">*</span></div>
+                    <div class="form-label-group">
+                        <input type="number" class="form-control" name="prezzo" min="0" step="0.01" value="{{ Prodotto.prezzo }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row justify-content-center">
+                <div class="col-md-6 p-3">
+                    <div class="text-center p-1 etichetta">Prezzo Listino<span class="text-danger">*</span></div>
+                    <div class="form-label-group">
+                        <input type="number" class="form-control" name="prezzo_listino" min="0" step="0.01" value="{{ Prodotto.prezzo_listino }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row justify-content-center">
+                <div class="col-md-6 p-3">
+                    <div class="text-center p-1 etichetta">Tipologia<span class="text-danger">*</span></div>
+                    <select class="form-control" name="IDTipologia" required>
+                        {% for tipologia in TipologieProdotti %}
+                            <option value="{{ tipologia.ID }}" {% if tipologia.id == Prodotto.IDTipologia %}selected{% endif %}>{{ tipologia.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="container_no_max_width">
+                <div class="card mx-auto mt-5">
+                    <div class="card-header">Opzioni</div>
+                    <div class="card-body p-4">
+
+                        {% for attributo in AttributiProdotti %}
+                            <div class="form-group row justify-content-center mb-5">
+
+                                <div class="col-md-12">
+                                    <div class="text-center p-1 etichetta"><h5>{{ attributo.nome|upper }}</h5></div>
+                                </div>
+
+                                {% for opzione in attributo.opzioni %}
+                                    <div class="col-md-3">
+                                        <div class="text-center p-1 etichetta">{{ opzione.nome }}</div>
+
+                                        <input type="hidden" name="AttributiOpzioni_ID[]" value="{{ opzione.ID }}">
+
+                                        <select class="form-control select_attributi_opzioni" name="AttributiOpzioni_Valore[]">
+                                            <option value="">-</option>
+                                            <option
+                                                value="0"
+                                                {% for opzione_attributi_prodotto in OpzioniAttributiProdotto %}
+                                                    {% if opzione_attributi_prodotto.IDAttributoOpzione == opzione.ID and opzione_attributi_prodotto.disponibile == 0 %}
+                                                        selected
+                                                    {% endif %}
+                                                {% endfor %}
+                                            >Non disponibile</option>
+                                            <option
+                                                value="1"
+                                                {% for opzione_attributi_prodotto in OpzioniAttributiProdotto %}
+                                                    {% if opzione_attributi_prodotto.IDAttributoOpzione == opzione.ID and opzione_attributi_prodotto.disponibile == 1 %}
+                                                        selected
+                                                    {% endif %}
+                                                {% endfor %}
+                                            >Disponibile</option>
+                                        </select>
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 m-auto">
+                <button type="submit" class="btn button-azzurro btn-block mt-5">Conferma</button>
+            </div>
+
+          </form>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_shop').click();
+	});
+</script>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Impostazioni{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Impostazioni</a>
+	  <li class="breadcrumb-item active">Impostazioni</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Impostazioni</div>
+        <div class="card-body">
+
+        	<div class="col-md-12 p-3" id="SpazioNotifica">{% if ImpostazioniSalvate is defined %}{{ ImpostazioniSalvate|raw }}{% endif %}</div>
+
+			<form action="{{AppPath}}AdminImpostazioni/impostazioni" method="post">
+
+				<div class="form-group row">
+					<div class="col-lg-12 p-3">
+		                <div class="p-1 etichetta">
+		                	Abilita Bonifico
+			                <input
+			                	type="checkbox"
+			                	class="ml-5"
+			                	name="AbilitaBonifico"
+			                	style="zoom: 1.5;"
+			                	{% if Impostazioni_AbilitaBonifico == "1" %}checked{% endif %}>
+		                </div>
+		            </div>
+				</div>
+
+				<div class="col-lg-3 m-auto">
+	              <button type="submit" name="ConfermaImpostazioni" class="btn button-azzurro btn-block mt-5">Conferma</button>
+	            </div>
+
+    		</form>
+
+    	</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Gare - Gare Passate{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Gare</a>
+	  <li class="breadcrumb-item active">Gare Passate</li>
+	</li>
+</ol>
+
+
+{% for evento in Eventi %}
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header titolo-evento">{{ evento.0.nome_evento }}</div>
+        <div class="card-body p-4">
+
+    		{% for gara in evento %}
+	    		<div class="row">
+		    		<div class="col-md-12 align-self-center">
+					    <div class="card">
+					        <div class="card-header sfondo-azzurro_tema border-style-solid">
+
+						        <span class="mr-2">{{ gara.nome_gara }}</span>
+						        {% if gara.mostra_risultati == 0 %}
+							    	<span class="text-warning float-right">Risultati non ancora disponibili</span>
+							    {% else %}
+							    	<a href="{{AppPath}}/Gare/RisultatiGara/{{ gara.ID_gara }}">
+							    		<button type="button" class="btn btn-success float-right">Risultati/Results</button>
+							    	</a>
+							    {% endif %}
+				        
+							</div>
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+        	  
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_gare').click();
+	});
+</script>
+
+{% endblock %}

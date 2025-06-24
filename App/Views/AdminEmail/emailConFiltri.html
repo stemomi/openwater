@@ -1,0 +1,344 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Email Con Filtri{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">
+    <li class="active">Email Con Filtri</li>
+  </li>
+</ol>
+
+<div class="row justify-content-center">
+  <div class="col-md-4 p-3 text-center text-danger">
+    <h3>Email</h3>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-6 p-3">
+    <div class="text-center p-1 etichetta">Oggetto</div>
+    <input type="text" class="form-control" id="OggettoEmail" value="ISCRIZIONE IOWT 2023 NON CONFERMATA***IOWT 2023 ENROLLMENT NOT CONFIRMED">
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-6 p-3">
+    <div class="text-center p-1 etichetta">Messaggio</div>
+    <textarea class="form-control" id="MessaggioEmail" rows="8">
+        Caro Swimmer,<br>
+
+        abbiamo ricevuto la tua iscrizione che risulta però incompleta senza il saldo della quota: non ci è possibile quindi registrarla.
+
+        Tra 24h verrà automaticamente cancellata dal sistema perdendo il diritto ad eventuali quote oramai scadute, sarà quindi necessario effettuare nuovamente la procedura.<br>
+
+        <strong>Ti aspettiamo</strong> <br>
+        ********************************************************<br>
+        Dear Swimmer,<br>
+        We have received your registration which, however, is incomplete without the balance of the fee: it is therefore not possible for us to register it. In 24 hours it will be automatically canceled from the system, losing the right to any quotas that have now expired, it will therefore be necessary to carry out the procedure again. We are waiting for you
+    </textarea>
+  </div>
+</div>
+
+<div class="row justify-content-center mt-5">
+  <div class="col-md-4 p-3 text-center text-danger">
+    <h3>Filtri</h3>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+
+    <div class="col-md-4 p-3">
+      <div class="text-center p-1 etichetta">Tipo Utente</div>
+      <select class="form-control" id="TipoUtente">
+        <option value="0">Tutti</option>
+        <option value="1">Solo Italiani</option>
+        <option value="2">Solo Esteri</option>
+      </select>
+    </div>
+
+    <div class="col-md-4 p-3">
+      <div class="text-center p-1 etichetta">Iscrizioni</div>
+      <select class="form-control" id="TipoIscrizioni">
+        <option value="0">Tutte le iscrizioni</option>
+        <option value="1">Solo iscrizioni da pagare</option>
+      </select>
+    </div>
+
+</div>
+
+<div class="row justify-content-center">
+
+    <div class="col-md-4 p-3">
+      <div class="text-center p-1 etichetta">Evento</div>
+      <select class="form-control" id="IDEvento">
+        <option value="0">Tutti gli eventi</option>
+        {% for evento in Eventi %}
+          <option value="{{ evento.ID }}">{{ evento.nome }}</option>
+        {% endfor%}
+      </select>
+    </div>
+
+
+    <div class="col-md-4 p-3">
+      <div class="text-center p-1 etichetta">Gara</div>
+      <select class="form-control" id="IDGara">
+        <option value="0" id-evento="0">Tutte le gare</option>
+        {% for gara in Gare %}
+          <option value="{{ gara.ID_gara }}" id-evento="{{ gara.ID_evento }}">{{ gara.nome_evento }} {{ gara.nome_gara }}</option>
+        {% endfor%}
+      </select>
+    </div>
+
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-3 p-3">
+    <button type="button" id="GeneraLista" class="btn button-azzurro btn-block mt-5">Genera Lista</button>
+  </div>
+</div>
+
+<div class="row" id="BloccoTabella">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"></div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <table width="100%" class="table table-striped table-bordered table-hover" id="TabellaMostraLista">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Invio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="MostraLista">
+                    </tbody>
+                </table>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row justify-content-center" id="BloccoAvanzamento">
+  <div class="col-md-3 p-3 text-center">
+    <div id="BarraAvanzamento" class="BarraAvanzamentoVerde"></div>
+    <div id="PercentualeAvanzamento">0%</div>
+    <div>Totali inviate: <span id="EmailSuccessoAvanzamento"></span> </div>
+    <div>Totali non inviate: <span id="EmailFalliteAvanzamento"></span> </div>
+  </div>
+</div>
+
+<div class="row justify-content-center" id="BloccoInvia">
+  <div class="col-md-12 mt-5 text-center">
+    <input type="checkbox" id="Simulazione"> Simulazione (simula avanzamento senza inviare, inviate e non inviate generate in modo casuale)
+  </div>
+  <div class="col-md-12 mt-5 text-center text-danger" id="CampoErrore">
+  </div>
+  <div class="col-md-3 p-3">
+    <button type="button" id="InviaEmail" class="btn button-azzurro btn-block mt-5">Invia</button>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+  $(document).ready(function()
+  {
+    if ($(window).width() > 768) $('#dropdown_email').click();
+    $('#menu_email_con_filtri').addClass('active');
+
+    var TabellaDatatable;
+    var EmailDaProcessare= [];
+    var EmailInviate = 0;
+    var EmailSuccesso = 0;
+    var EmailFallite = 0;
+
+    TabellaDatatable= $('#TabellaMostraLista').dataTable(
+    {
+        "processing": true,
+        "columnDefs": [ {"className": "text-center", "targets":  [-1], "orderable": false}]
+    } );
+
+    $('#BloccoAvanzamento').hide();
+    $('#BloccoInvia').hide();
+    $('#BloccoTabella').hide();
+
+    // Cambio filtro evento
+    $(document).on('change', '#IDEvento', function()
+    {
+      var IDEvento= $(this).val();
+
+      if (IDEvento > 0)
+      {
+        $('#IDGara option').prop('disabled', 'true');
+        $('#IDGara option[id-evento="0"]').removeAttr("disabled");
+        $('#IDGara option[id-evento="' + IDEvento + '"]').removeAttr("disabled");
+      }
+      else
+        $('#IDGara option').removeAttr("disabled");
+      
+    });
+
+    // Genera Lista
+    $(document).on('click', '#GeneraLista', function()
+    {
+        var TipoUtente = $('#TipoUtente').val();
+        var TipoIscrizioni = $('#TipoIscrizioni').val();
+        var IDEvento = $('#IDEvento').val();
+        var IDGara = $('#IDGara').val();
+        var OggettoEmail = $('#OggettoEmail').val();
+        var MessaggioEmail = $('#MessaggioEmail').val();
+
+        $('#PercentualeAvanzamento').text('0%'); 
+        $('#BarraAvanzamento').css('width', '1px');
+        $('#EmailSuccessoAvanzamento').text(0);
+        $('#EmailFalliteAvanzamento').text(0);
+        $('#BloccoAvanzamento').hide();
+
+        $.ajax({
+                type: 'POST',
+                url: URL + 'AdminEmail/ajaxUtentiEmailConFiltri',
+                data: {
+                        UtentiEmailConFiltri: 1,
+                        TipoUtente: TipoUtente,
+                        TipoIscrizioni: TipoIscrizioni,
+                        IDEvento: IDEvento,
+                        IDGara: IDGara
+                      },
+                dataType: 'json',
+                cache: false,
+                success: function(result)
+                {
+                  EmailDaProcessare = result['Risultati'];
+                  AggiornaEmailDaProcessare(EmailDaProcessare, TabellaDatatable);
+                  $('#BloccoTabella').show();
+                  $('#BloccoInvia').show();
+                }
+        });
+    });
+
+    // Invia
+    $(document).on('click', '#InviaEmail', function()
+    {
+      $('#CampoErrore').text('');
+
+      var OggettoEmail = $('#OggettoEmail').val();
+      var MessaggioEmail = $('.nicEdit-main').html();
+      var Simulazione = $('#Simulazione').prop('checked');
+
+      EmailInviate = 0;
+      EmailSuccesso = 0;
+      EmailFallite = 0;
+
+      if (OggettoEmail != '' && MessaggioEmail != '')
+      {
+        $('#BloccoAvanzamento').show();
+        
+        for (let riga of EmailDaProcessare)
+        {
+          $.ajax({
+                  type: 'POST',
+                  url: URL + 'AdminEmail/ajaxInviaEmail',
+                  data: {
+                          InviaEmail: 1,
+                          Email: riga.email,
+                          OggettoEmail: OggettoEmail,
+                          MessaggioEmail: MessaggioEmail,
+                          Simulazione: Simulazione
+                        },
+                  dataType: 'json',
+                  cache: false,
+                  success: function(result)
+                  {
+                    var Esito= result['Esito'];
+                    EmailInviate++;
+
+                    if (Esito == true)
+                    {
+                      EmailSuccesso++;
+                      riga.invio = true;
+                    }
+                    else
+                      EmailFallite++;
+                    
+                    AggiornaPercentualeAvanzamento(EmailInviate, EmailDaProcessare, TabellaDatatable, EmailSuccesso, EmailFallite);
+                  },
+                  error: function()
+                  {
+                    EmailFallite++;
+                    AggiornaPercentualeAvanzamento(EmailInviate, EmailDaProcessare, TabellaDatatable, EmailSuccesso, EmailFallite);
+                  }
+          });
+        }
+      }
+      else
+      {
+        $('#CampoErrore').text('Campi Oggetto o Messaggio mancanti!');
+        console.log('Oggetto o messaggio mancanti!');
+      }
+
+    });
+
+
+  });
+
+function AggiornaPercentualeAvanzamento(attuali, EmailDaProcessare, TabellaDatatable, EmailSuccesso, EmailFallite)
+{
+  var percentuale_avanzamento= parseInt( (attuali / EmailDaProcessare.length) * 100 );
+  var larghezza_barra_avanzamento= 3 * percentuale_avanzamento;
+
+  $('#PercentualeAvanzamento').text(percentuale_avanzamento + '%'); 
+  $('#BarraAvanzamento').css('width', larghezza_barra_avanzamento + 'px');
+
+  $('#EmailSuccessoAvanzamento').text(EmailSuccesso);
+  $('#EmailFalliteAvanzamento').text(EmailFallite);
+
+  if (percentuale_avanzamento == 100)
+    AggiornaEmailDaProcessare(EmailDaProcessare, TabellaDatatable, true)
+}
+
+function AggiornaEmailDaProcessare(EmailDaProcessare, TabellaDatatable, mostra_invio = false)
+{
+  TabellaDatatable.fnClearTable();
+
+  for (let riga of EmailDaProcessare)
+  {
+    var Invio= '';
+
+    if (mostra_invio == true)
+    {
+      if (riga.invio == true)
+        Invio = '<i class="fa fa-check text-success p-2" aria-hidden="true"></i>';
+      else
+        Invio = '<i class="fa fa-remove text-danger p-2" aria-hidden="true"></i>';
+    }
+
+    TabellaDatatable.fnAddData(
+      [
+        riga.nome + ' ' + riga.cognome,
+        riga.email,
+        Invio
+      ],
+      false);
+  }
+
+  TabellaDatatable.fnDraw();
+
+  console.log(EmailDaProcessare);
+}
+</script>
+
+<script src="{{AppPath}}js/nicEdit-latest.js?v=0.000001" type="text/javascript"></script>
+<script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
+            
+
+{% endblock %}

@@ -1,0 +1,301 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Risultati{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="#">Gare</a>
+      <li class="breadcrumb-item active">Risultati</li>
+    </li>
+</ol>
+
+<div class="row">
+    <div class="col-md-2 p-3"></div>
+    <div class="col-md-4 p-3">
+        <div class="text-center p-1 etichetta">Scegli gara</div>
+        <select class="form-control" id="IDGara" required>
+            <option value="">Seleziona gara</option>
+            {% for gara in ListaGareConRisultati %}
+                <option value="{{ gara.ID_gara }}">{{ gara.nome_evento }}: {{ gara.nome_gara }}</option>
+            {% endfor%}
+        </select>
+    </div>
+    <div class="col-md-4 p-3">
+        <div class="text-center p-1 etichetta">Scegli tipo</div>
+        <select class="form-control" id="TipoGara" required>
+            <option value="1">Generale</option>
+            <option value="2">Crudo</option>
+            <option value="3">Avis</option>
+            <option value="4">Over 40</option>
+        </select>
+    </div>
+    <div class="col-md-2 p-3"></div>
+</div>
+
+<div class="row">
+    <div class="col-lg-3 p-3 text-center m-auto">
+        <button type="button" id="GeneraRisultati" class="btn button-azzurro btn-block mt-5">Genera</button>
+    </div>
+</div>
+
+<div class="row" id="BloccoTabella">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"></div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <table width="100%" class="table table-striped table-bordered table-hover" id="TabellaMostraLista">
+                    <thead>
+                        <tr>
+                            <th>Posizione</th>
+                            <th>Utente</th>
+                            <th>Sesso</th>
+                            <th>Posizione Sesso</th>
+                            <th>Race Time</th>
+                            <th>Ora arrivo</th>
+                            <th>Distacco</th>
+                            <th>Media</th>
+                            <th>Invio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="MostraLista">
+                    </tbody>
+                </table>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row justify-content-center" id="BloccoAvanzamento" style="display: none;">
+    <div class="col-md-3 p-3 text-center">
+        <div id="BarraAvanzamento" class="BarraAvanzamentoVerde"></div>
+        <div id="PercentualeAvanzamento">0%</div>
+        <div>Totali inviate: <span id="EmailSuccessoAvanzamento"></span> </div>
+        <div>Totali non inviate: <span id="EmailFalliteAvanzamento"></span> </div>
+    </div>
+</div>
+
+<div class="row" id="RigaInviaEmailATutti" style="display: none;">
+    <div class="col-lg-3 p-3 text-center m-auto">
+        <button type="button" id="InviaEmailATutti" class="btn button-azzurro btn-block mt-5">Invia email a tutti</button>
+    </div>
+    <div class="col-lg-12 text-center">
+      <input type="checkbox" id="Simulazione"> Simulazione (simula avanzamento senza inviare, inviate e non inviate generate in modo casuale)
+    </div>
+    <div class="col-lg-12 p-3" id="InviaEmailATuttiErrore"></div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 p-3" id="Esito"></div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+
+$(document).ready(function()
+{
+    if ($(window).width() > 768) $('#dropdown_gare').click();
+	$('#menu_lista_risultati').addClass('menu-link-attivo');
+
+    var TabellaDatatable;
+    var EmailDaProcessare= [];
+    var EmailInviate = 0;
+    var EmailSuccesso = 0;
+    var EmailFallite = 0;
+
+    TabellaDatatable= $('#TabellaMostraLista').dataTable(
+    {
+        "processing": true,
+        "scrollX": true,
+        "order": [[ 0, "asc" ]],
+        "columnDefs": [ {"className": "text-center", "targets":  [-1], "orderable": false}]
+    } );
+
+    // Genera risultati tabella
+    $(document).on('click', '#GeneraRisultati', function()
+    {
+        var IDGara= $('#IDGara').val();
+        var TipoGara= $('#TipoGara').val();
+
+        // Nascondi sezioni relative all'invio email
+        $('#RigaInviaEmailATutti').hide();
+        $('#BloccoAvanzamento').hide();
+
+        if (IDGara != '')
+        {
+            $.ajax({
+                    type: 'POST',
+                    url: URL + 'AdminGare/ajaxTabellaRisultati',
+                    data:
+                    {
+                        IDGara: IDGara,
+                        TipoGara: TipoGara
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(result)
+                    {
+                        if (result['Successo'])
+                        {
+                            EmailDaProcessare = result['RisultatiGara'];
+                            AggiornaEmailDaProcessare(EmailDaProcessare, TabellaDatatable);
+
+                            $('#Esito').html('');
+
+                            // Mostra tasto invia email a tutti
+                            $('#RigaInviaEmailATutti').show();
+                        }
+                        else
+                        {
+                            EmailDaProcessare = [];
+                            AggiornaEmailDaProcessare(EmailDaProcessare, TabellaDatatable);
+                            $('#Esito').html('<div class="text-danger text-center">Nessun risultato trovato per questa gara!</div>');
+
+                            // Nascondi tasto invia email a tutti
+                            $('#RigaInviaEmailATutti').hide();
+                        }
+                    }
+                });
+        }
+    });
+
+    // Invia email risultati a tutti
+    $(document).on('click', '#InviaEmailATutti', function()
+    {
+        $('#BloccoAvanzamento').show();
+        $('#InviaEmailATuttiErrore').html('');
+
+        var IDGara= $('#IDGara').val();
+        var TipoGara= $('#TipoGara').val();
+        var Simulazione = $('#Simulazione').prop('checked');
+
+        EmailInviate = 0;
+        EmailSuccesso = 0;
+        EmailFallite = 0;
+
+        if (IDGara != '')
+        {
+            for (let riga of EmailDaProcessare)
+            {
+                $.ajax(
+                {
+                    type: 'POST',
+                    url: URL + 'AdminEmail/ajaxInviaEmailRisultatoGara',
+                    data:
+                    {
+                        InviaEmail: 1,
+                        IDRisultato: riga.rg_id,
+                        Nome: riga.rg_nome,
+                        Cognome: riga.rg_cognome,
+                        Email: riga.u_email,
+                        Simulazione: Simulazione
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(result)
+                    {
+                        var Esito = result['Esito'];
+                        EmailInviate++;
+
+                        if (Esito == true)
+                        {
+                            EmailSuccesso++;
+                            riga.invio = true;
+                        }
+                        else
+                            EmailFallite++;
+
+                        AggiornaPercentualeAvanzamento(EmailInviate, EmailDaProcessare, TabellaDatatable, EmailSuccesso, EmailFallite);
+                    },
+                    error: function()
+                    {
+                        EmailFallite++;
+                        AggiornaPercentualeAvanzamento(EmailInviate, EmailDaProcessare, TabellaDatatable, EmailSuccesso, EmailFallite);
+                    }
+                });
+            }
+        }
+        else
+            $('#InviaEmailATuttiErrore').html('<span class="text-center text-danger">Nessuna gara selezionata!</span>');
+    });
+});
+
+function AggiornaPercentualeAvanzamento(attuali, EmailDaProcessare, TabellaDatatable, EmailSuccesso, EmailFallite)
+{
+  var percentuale_avanzamento= parseInt( (attuali / EmailDaProcessare.length) * 100 );
+  var larghezza_barra_avanzamento= 3 * percentuale_avanzamento;
+
+  $('#PercentualeAvanzamento').text(percentuale_avanzamento + '%'); 
+  $('#BarraAvanzamento').css('width', larghezza_barra_avanzamento + 'px');
+
+  $('#EmailSuccessoAvanzamento').text(EmailSuccesso);
+  $('#EmailFalliteAvanzamento').text(EmailFallite);
+
+  if (percentuale_avanzamento == 100)
+    AggiornaEmailDaProcessare(EmailDaProcessare, TabellaDatatable, true)
+}
+
+function AggiornaEmailDaProcessare(EmailDaProcessare, TabellaDatatable, mostra_invio = false)
+{
+    TabellaDatatable.fnClearTable();
+
+    for (let riga of EmailDaProcessare)
+    {
+        var Invio= '';
+
+        if (mostra_invio == true)
+        {
+            if (riga.invio == true)
+                Invio = '<i class="fa fa-check text-success p-2" aria-hidden="true"></i>';
+            else
+                Invio = '<i class="fa fa-remove text-danger p-2" aria-hidden="true"></i>';
+        }
+
+        TabellaDatatable.fnAddData(
+        [
+            riga.rg_posizione_per_tipo,
+            riga.rg_nome + ' ' + riga.rg_cognome,
+            riga.rg_sesso,
+            riga.rg_posizione_sesso_per_tipo,
+            riga.rg_racetime,
+            riga.rg_ora_arrivo,
+            riga.rg_distacco,
+            riga.rg_media,
+            Invio
+        ],
+        false);
+    }
+
+    TabellaDatatable.fnDraw();
+}
+
+// Preseleziona gara
+let id_gara = {{ id_gara }};
+
+if (id_gara > 0)
+{
+    $('#IDGara').val(id_gara);
+
+    setTimeout(
+        function()
+        {
+            $('#GeneraRisultati').click();
+        },
+        300
+    );
+}
+
+</script>
+
+{% endblock %}

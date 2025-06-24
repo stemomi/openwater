@@ -1,0 +1,332 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Gare - Modifica Gara{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Gare</a>
+	  <li class="breadcrumb-item active">Modifica Gara</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Modifica Gara</div>
+        <div class="card-body">
+
+        	<div class="col-md-12 p-3" id="SpazioNotifica">{% if GaraModificata is defined %}{{ GaraModificata|raw }}{% endif %}</div>
+
+			<form action="{{AppPath}}AdminGare/modificaGaraConfirm" method="post">
+
+				<input type="hidden" id="IDGara" name="IDGara" value="{{ Gara.ID }}">
+
+				<div class="form-group row">
+
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Scegli evento<span class="text-danger">*</span></div>
+		                <select class="form-control" name="IDEvento" required="required">
+		                	<option value="">Seleziona evento</option>
+		                	{% for evento in Eventi %}
+		                		<option value="{{ evento.ID }}" {% if evento.ID == Gara.ID_evento %}selected{% endif %}>{{ evento.nome }}</option>
+		                	{% endfor%}
+		                </select>
+		            </div>
+
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Nome gara<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="text" class="form-control" name="Nome" value="{{ Gara.nome }}" required="required" autofocus="autofocus">
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Termine prezzo 1 (fino al, incluso)<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+						  <input type="text" class="form-control datepicker" name="DataPrezzo1" value="{{ Gara.data_prezzo1|date("d/m/Y") }}" required="required">
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo 1<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="number" step="0.01" min="0" class="form-control" name="Prezzo1" value="{{ Gara.prezzo1 }}" required="required">
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Sconto %</div>
+		                <div class="form-label-group">
+		                  <input type="number" step="1" min="0" max="99" class="form-control" name="ScontoPrezzo1" value="{{ Gara.sconto_prezzo1 }}">
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Termine prezzo 2 (fino al, incluso)<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+						  <input type="text" class="form-control datepicker" name="DataPrezzo2" value="{{ Gara.data_prezzo2|date("d/m/Y") }}" required="required">
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo 2<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="number" step="0.01" min="0" class="form-control" name="Prezzo2" value="{{ Gara.prezzo2 }}" required="required">
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Sconto %</div>
+		                <div class="form-label-group">
+		                  <input type="number" step="1" min="0" max="99" class="form-control" name="ScontoPrezzo2" value="{{ Gara.sconto_prezzo2 }}">
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta">Termine prezzo 3 (fino al, incluso)<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+						  <input type="text" class="form-control datepicker" name="DataPrezzo3" value="{{ Gara.data_prezzo3|date("d/m/Y") }}" required="required">
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo 3<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="number" step="0.01" min="0" class="form-control" name="Prezzo3" value="{{ Gara.prezzo3 }}" required="required">
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Sconto %</div>
+		                <div class="form-label-group">
+		                  <input type="number" step="1" min="0" max="99" class="form-control" name="ScontoPrezzo3" value="{{ Gara.sconto_prezzo3 }}">
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+						<div class="text-center p-1 etichetta" hidden>Termine prezzo 4 (fino al, incluso)</div>
+						<div class="form-label-group" hidden>
+						  <input type="text" class="form-control datepicker" name="DataPrezzo4"
+						  		 value="{% if Gara.data_prezzo4 is defined and Gara.data_prezzo4 is not null %}{{ Gara.data_prezzo4|date("d/m/Y") }}{% endif %}">
+						</div>
+					</div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo Finale<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="number" step="0.01" min="0" class="form-control" name="Prezzo4" value="{{ Gara.prezzo4 }}" required="required">
+		                </div>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Sconto %</div>
+		                <div class="form-label-group">
+		                  <input type="number" step="1" min="0" max="99" class="form-control" name="ScontoPrezzo4" value="{{ Gara.sconto_prezzo4 }}">
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="form-group row justify-content-center">
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Tipo Gara<span class="text-danger">*</span></div>
+		                <select class="form-control" name="IDTipo" id="IDTipo" required="required">
+		                	<option value="">Seleziona tipo gara</option>
+		                	<option value="1" {% if 1 == Gara.tipo %}selected{% endif %}>Corta</option>
+		                	<option value="2" {% if 2 == Gara.tipo %}selected{% endif %}>Media</option>
+		                	<option value="3" {% if 3 == Gara.tipo %}selected{% endif %}>Lunga</option>
+							<option value="4" {% if 4 == Gara.tipo %}selected{% endif %}>Il Km Lanciato</option>
+		                	<option value="0" {% if 0 == Gara.tipo %}selected{% endif %}>Staffetta o Combinata</option>
+		                </select>
+		            </div>
+				</div>
+
+				<div class="form-group row">
+
+					<div class="col-md-3 p-3">
+						<div class="text-center p-1 etichetta">Staffetta</div>
+						<div class="form-label-group text-center">
+						  <input type="checkbox" name="Staffetta" id="Staffetta" {% if Gara.staffetta == 1 %}checked{% endif %}>
+						</div>
+					</div>
+
+					<div class="col-md-3 p-3">
+						<div class="text-center p-1 etichetta">Gara Combinata</div>
+						<div class="form-label-group text-center">
+						  <input type="checkbox" name="GaraCombinata" {% if Gara.combinata == 1 %}checked{% endif %}>
+						</div>
+					</div>
+
+					<div class="col-md-3 p-3">
+						<div class="text-center p-1 etichetta">Mostra Risultati</div>
+						<div class="form-label-group text-center">
+						  <input type="checkbox" name="MostraRisultati" {% if Gara.mostra_risultati == 1 %}checked{% endif %}>
+						</div>
+					</div>
+
+					<div class="col-md-3 p-3">
+						<div class="text-center p-1 etichetta">Blocca Gara</div>
+						<div class="form-label-group text-center">
+						  <input type="checkbox" name="BloccaGara" {% if Gara.gara_bloccata == 1 %}checked{% endif %}>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="container_no_max_width">
+				    <div class="card mx-auto mt-5">
+				        <div class="card-header">Gare collegate</div>
+				        <div class="card-body p-4">
+
+							<div class="form-group row mb-5">
+								<div class="col-lg-4 m-auto">
+					                <select class="form-control" id="SelectIDGaraCollegata">
+					                	<option value="">Seleziona gara</option>
+					                	{% for gara in GareStessoEvento %}
+					                		<option value="{{ gara.ID }}" nome="{{ gara.nome }}">{{ gara.nome }}</option>
+					                	{% endfor %}
+					                </select>
+					            </div>
+					            <div class="col-lg-3 m-auto">
+					              <button type="button" id="AggiungiGaraCollegata" class="btn button-azzurro btn-block">Aggiungi</button>
+					            </div>
+							</div>
+
+				    		<div class="row">
+					    		<div class="col-md-12 align-self-center" id="PreAggiuntaGareCollegate">
+					    			{% for gara in GareCombinateAggiunte %}
+									    <div class="card">
+									        <div class="card-header sfondo-azzurro_tema border-style-solid">
+										        <span class="mr-2">{{ gara.A_g_nome }}</span>
+										        <span class="float-right">
+										        	<button type="button" class="btn btn-danger RimuoviGaraCollegata" gara_collegata_id="{{ gara.A_gc_ID }}">Rimuovi</button>
+										        </span>	        
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+							</div>
+
+				        </div>
+				    </div>
+				</div>
+
+				<div class="col-lg-3 m-auto">
+	              <button type="submit" name="ConfermaModificaGara" id="ConfermaModificaGaraSubmit" class="btn button-azzurro btn-block mt-5" hidden>Conferma</button>
+	              <button type="button" id="ConfermaModificaGaraButton" class="btn button-azzurro btn-block mt-5">Conferma</button>
+	            </div>
+
+    		</form>
+
+    	</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_gare').click();
+		$('#menu_lista_gare').addClass('active');
+
+		if ( $('#SpazioNotifica').html() != '' ) $('#SpazioNotifica').addClass('ButtonAnimato');
+
+		// Invio form
+		$(document).on('click', '#ConfermaModificaGaraButton', function()
+		{
+			var Tipo = $('#IDTipo option:selected').val();
+			var StaffettaFlag = $('#Staffetta').is(':checked') ? 1 : 0;
+
+			if (StaffettaFlag == 1 && Tipo != 0)
+				$('#IDTipo').val(0);
+
+			$('#ConfermaModificaGaraSubmit').click();
+		});
+
+		// Rimuovi gara collegata
+		$(document).on('click', '.RimuoviGaraCollegata', function()
+		{
+			var IDGaraCollegata= $(this).attr('gara_collegata_id');
+			var Base = $(this).parent().parent().parent();
+			
+			$.ajax(
+			{
+		        type: 'POST',
+		        url: URL + '{{URL}}AdminGare/ajaxCancellaGaraCollegata',
+		        data: {
+		                CancellaGaraCollegata: "1",
+		                IDGaraCollegata: IDGaraCollegata
+		              },
+		        dataType: 'json',
+		        cache: false,
+		        success: function(result)
+		        {
+		        	Base.remove();
+		        }
+			});
+		});
+
+		// Aggiungi gara collegata
+		$(document).on('click', '#AggiungiGaraCollegata', function()
+		{
+			var IDGaraDaCollegare= $('#SelectIDGaraCollegata').val();
+			var NomeGaraDaCollegare= $('#SelectIDGaraCollegata').find(":selected").attr('nome');
+			var IDGara = $('#IDGara').val();
+			
+			$.ajax(
+			{
+		        type: 'POST',
+		        url: URL + '{{URL}}AdminGare/ajaxAggiungiGaraCollegata',
+		        data: {
+		                AggiungiGaraCollegata: "1",
+		                IDGaraDaCollegare: IDGaraDaCollegare,
+		                IDGara : IDGara
+		              },
+		        dataType: 'json',
+		        cache: false,
+		        success: function(result)
+		        {
+		        	var IDCollegamento= result['IDCollegamento'];
+
+		        	if (IDCollegamento > 0)
+		        	{
+		        		var StringaAggiunta= '<div class="card">\
+										        <div class="card-header sfondo-azzurro_tema border-style-solid">\
+											        <span class="mr-2">' + NomeGaraDaCollegare + '</span>\
+											        <span class="float-right">\
+											        	<button type="button" class="btn btn-danger RimuoviGaraCollegata" gara_collegata_id="' + IDCollegamento + '">Rimuovi</button>\
+											        </span>	        \
+												</div>\
+											  </div>';
+
+						$('#PreAggiuntaGareCollegate').append(StringaAggiunta);
+		        	}
+		        }
+			});
+
+		});
+	});
+</script>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Utenti{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <li class="active">Tutti gli Utenti</li>
+	</li>
+</ol>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"></div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <table width="100%" class="table table-striped table-bordered table-hover" id="tabella_utenti">
+                    <thead>
+                        <tr>
+                            <th>ID tessera</th>
+                            <th>Nome</th>
+                            <th>Cognome</th>
+                            <th>Email</th>
+                            <th>Dettagli</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		$('#menu_utenti').addClass('menu-link-attivo');
+
+        $('#tabella_utenti').DataTable( {
+            "processing": true,
+            "serverSide": true,
+            "scrollX": true,
+            "order": [[ 2, "asc" ]],
+            "ajax": "{{AppPath}}AdminAccount/ajaxUtenti/0",
+            "columnDefs": [ {"className": "dt-center", "targets":  [-1], "orderable": false}],
+            "columns": [
+                { "data": "id_tessera" },
+                { "data": "nome" },
+                { "data": "cognome" },
+                { "data": "email" },
+                { "data": "dettagli" }
+            ]
+        });
+	});
+</script>
+
+{% endblock %}

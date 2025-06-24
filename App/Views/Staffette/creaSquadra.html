@@ -1,0 +1,66 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Staffette - Crea Squadra{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Staffette</a>
+	  <li class="breadcrumb-item active">Crea Squadra</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Crea Squadra</div>
+        <div class="card-body">
+
+        	<div class="col-md-12 p-3" id="SpazioNotifica">{% if SquadraCreata is defined %}{{ SquadraCreata|raw }}{% endif %}</div>
+
+			<form action="{{AppPath}}Staffette/CreaSquadra" method="post">
+
+				<div class="form-group row">
+
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Scegli gara<span class="text-danger">*</span></div>
+		                <select class="form-control" name="IDGara" required="required">
+		                	<option value="">Seleziona gara</option>
+		                	{% for gara in StaffetteAperte %}
+		                		<option value="{{ gara.ID_gara }}">{{ gara.nome_evento }}: {{ gara.nome_gara }}</option>
+		                	{% endfor%}
+		                </select>
+		            </div>
+
+					<div class="col-md-6 p-3">
+		                <div class="text-center p-1 etichetta">Nome staffetta<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="text" class="form-control" name="NomeStaffetta" required="required">
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="col-lg-3 m-auto">
+	              <button type="submit" name="ConfermaCreaSquadra" class="btn button-azzurro btn-block mt-5">Conferma</button>
+	            </div>
+
+    		</form>
+
+    	</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_staffette').click();
+	});
+</script>
+
+{% endblock %}

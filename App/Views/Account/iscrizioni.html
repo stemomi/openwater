@@ -1,0 +1,978 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Account - Iscrizioni{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Account</a>
+	  <li class="breadcrumb-item active">Iscrizioni</li>
+	</li>
+</ol>
+
+<div class="row" {% if TestoNotifica == '' %}hidden{% endif %}>
+	<div class="col-md-12 text-center">
+	    {{ TestoNotifica|raw }}
+	</div>
+</div>
+
+{% for evento_key, evento in Eventi %}
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header titolo-evento">{{ evento.Gare.0.nome_evento }}</div>
+
+        <div class="card-body p-4 SezioneEvento">
+
+    		{% for gara in evento.Gare %}
+
+    			{% if 'now'|date('Y-m-d') <= gara.data_prezzo1 %}
+					{% set PrezzoStimato = gara.prezzo1 * (100 - gara.sconto_prezzo1) / 100 %}
+				{% elseif 'now'|date('Y-m-d') <= gara.data_prezzo2 %}
+					{% set PrezzoStimato = gara.prezzo2 * (100 - gara.sconto_prezzo2) / 100 %}
+				{% elseif 'now'|date('Y-m-d') <= gara.data_prezzo3 %}
+					{% set PrezzoStimato = gara.prezzo3 * (100 - gara.sconto_prezzo3) / 100 %}
+				{% else %}
+					{% set PrezzoStimato = gara.prezzo4 * (100 - gara.sconto_prezzo4) / 100 %}
+				{% endif %}
+
+    		<div class="row">
+
+	    		<div class="col-md-12 align-self-center">
+				    <div class="card">
+				        <div class="card-header sfondo-azzurro_tema border-style-solid">
+
+					        <span class="mr-2">{{ gara.nome_gara }}</span>
+					        
+					        {% if gara.pagato == 0 %}
+						    	<span class="text-warning">€ {{ PrezzoStimato }}</span>
+						    {% endif %}
+
+					        <span class="float-right">
+					        	{% if gara.iscritto == 1 and gara.pagato == 1 %}
+					        		<button
+					        			class="
+					        				btn
+					        				btn-success
+					        				EventoScontoQuantitaGaraPagata
+					        				{% if gara.sconto_combo_gara_applicato == 1 %}GaraScontoComboApplicato{% endif %}
+					        			"
+					        			disabled
+					        		>Iscrizione e Pagamento OK</button>
+					        	{% elseif gara.iscritto == 1 and gara.pagato == 0 %}
+					        		<button
+					        			class="
+					        				btn
+					        				btn-danger
+					        				PrezziIscrizioni
+					        				EventoScontoQuantitaGaraIscrizione
+					        				{% if gara.sconto_combo_gara_applicato == 1 %}GaraScontoComboApplicato{% endif %}
+					        			"
+					        			value="{{ PrezzoStimato }}"
+					        			disabled
+                                    >
+                                        In attesa di pagamento/Waiting payment
+                                    </button>
+                                    <button 
+                                        class="btn btn-danger cancella-iscrizione" 
+                                        data-iscrizione-id="{{ gara.iscrizione_id }}" 
+                                        data-gara-nome="{{ gara.nome_gara }}"
+                                        data-quantita-gare-evento-iscritto="{{ evento.Gare|length }}"
+                                        data-ha-opzioni-acquisto="{{ evento.OpzioniAcquisto.ha_opzione_acquisto }}"
+                                        data-toggle="modal"
+                                        data-target="#modal-cancella-iscrizione"
+                                    >
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+					        	{% else %}
+					        		<button class="btn btn-success ButtonIscriviti"
+					        				id_gara="{{ gara.ID_gara }}"
+					        				value="{{ PrezzoStimato }}"
+					        		>Iscriviti/Sign in</button>
+					        	{% endif %}
+					        </span>
+
+					        <span class="float-right mr-3" hidden>
+					        	{% if gara.prezzo_boa == 0.00 and gara.richiesta_boa == 1 %}
+					        		<button type="button" class="btn btn-danger" disabled>Boa Richiesta</button>
+					        	{% elseif gara.prezzo_boa > 0.00 %}
+					        		<button type="button" class="btn btn-warning" disabled>Boa Pagata</button>
+					        	{% endif %}
+					        </span>
+			        
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+
+			{% endfor %}
+
+			{% if evento.richiesta_boa == 1 %}
+
+	    		<div class="row">
+
+		    		<div class="col-md-12 align-self-center">
+					    <div class="card">
+					        <div class="card-header sfondo-grigio border-style-solid">
+
+						        <span class="mr-2">Acquista Boa</span>
+
+						        {% if evento.prezzo_boa == 0.00 %}
+							    	<span class="text-warning">€ {{ PREZZO_BOA }}</span>
+							    {% endif %}
+
+						        <span class="float-right">
+						        	{% if evento.prezzo_boa == 0.00 and evento.richiesta_boa == 1 %}
+						        		<button type="button" class="btn btn-danger" disabled>Boa Richiesta</button>
+						        	{% elseif evento.prezzo_boa > 0.00 %}
+						        		<button type="button" class="btn btn-warning" disabled>Boa Pagata</button>
+						        	{% endif %}
+						        </span>
+				        
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+			{% endif %}
+
+			{% for opzione_acquisto_key, opzione_acquisto in evento.OpzioniAcquisto %}
+
+				{% if opzione_acquisto.acquistato == 1 and opzione_acquisto.pagato == 0 %}
+		    		<div class="row">
+
+			    		<div class="col-md-12 align-self-center">
+						    <div class="card">
+						        <div class="card-header sfondo-grigio border-style-solid">
+
+							        <span class="mr-2">{{ opzione_acquisto_key }}</span>
+							        <span class="text-warning mr-2">€ {{ opzione_acquisto.prezzo }}</span>
+
+							        <span class="float-right">
+							        	{% if opzione_acquisto.acquistato == 1 and opzione_acquisto.pagato == 0 %}
+							        		<button type="button" class="btn btn-danger" disabled>Da pagare</button>
+                                            <button 
+                                                class="btn btn-danger cancella-opzione-acquisto" 
+                                                data-opzione-acquisto-id="{{ opzione_acquisto.opzione_acquisto_aoae_id }}" 
+                                                data-opzione-acquisto-nome="{{ opzione_acquisto_key }}"
+                                                data-toggle="modal"
+                                                data-target="#modal-cancella-opzione-acquisto"
+                                            >
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+							        	{% elseif opzione_acquisto.pagato == 1 %}
+							        		<button type="button" class="btn btn-warning" disabled>Pagato</button>
+							        	{% endif %}
+							        </span>
+					        
+								</div>
+							</div>
+						</div>
+
+					</div>
+				{% endif %}
+			{% endfor %}
+
+    		<div class="row SezioneScontiEventiQuantitaGare"></div>
+        	  
+        </div>
+
+    </div>
+</div>
+
+{% endfor %}
+
+{% for evento in EventiIndividuali %}
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header titolo-evento">
+        	{{ evento.0.nome_evento }}
+        	<span class="text-warning">(Individuale)</span>
+    	</div>
+
+        <div class="card-body p-4">
+
+    		{% for gara in evento %}
+
+				{% set PrezzoStimato = gara.prezzo %}
+
+    		<div class="row">
+
+	    		<div class="col-md-12 align-self-center">
+				    <div class="card">
+				        <div class="card-header sfondo-azzurro_tema border-style-solid">
+
+				        <span class="mr-2">{{ gara.nome_gara }}</span>
+				        {% if gara.pagato == 0 %}
+					    <span class="text-warning">€ {{ PrezzoStimato }}</span>
+					    {% endif %}
+
+				        <span class="float-right">
+				        	{% if gara.iscritto == 1 and gara.pagato == 1 and gara.ID_risultato > 0 and gara.convalidato > 0 %}
+				        		<button class="btn btn-success" disabled>Risultato Verificato ({{ gara.tempo }})</button>
+				        	{% elseif gara.iscritto == 1 and gara.pagato == 1 and gara.ID_risultato > 0 %}
+				        		<button class="btn btn-success" disabled>Risultato Caricato ({{ gara.tempo }})</button>
+				        	{% elseif gara.iscritto == 1 and gara.pagato == 1 %}
+				        		<button class="btn btn-success" disabled>Iscrizione e Pagamento OK</button>
+				        		<a href="{{ AppPath }}GareIndividuali/CaricaRisultato/{{ gara.ID_iscrizione }}">
+				        			<button type="button" class="btn btn-warning">Carica risultato</button>
+				        		</a>
+				        	{% elseif gara.iscritto == 1 and gara.pagato == 0 %}
+				        		<button class="btn btn-danger PrezziIscrizioni"
+				        				value="{{ PrezzoStimato }}"
+				        				disabled>In attesa di pagamento/Waiting payment</button>
+				        	{% else %}
+				        		<button class="btn btn-success ButtonIscriviti"
+				        				id_gara="{{ gara.ID_gara }}"
+				        				value="{{ PrezzoStimato }}"
+				        		>Iscriviti/Sign in</button>
+				        	{% endif %}
+				        </span>
+			        
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+
+			{% endfor %}
+        	  
+        </div>
+
+    </div>
+</div>
+
+{% endfor %}
+
+{% if BoaDaPagare == 1 %}
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header titolo-evento">Boa</div>
+
+        <div class="card-body p-4">
+
+    		<div class="row">
+
+	    		<div class="col-md-12 align-self-center">
+				    <div class="card">
+				        <div class="card-header sfondo-azzurro_tema border-style-solid">
+
+					        <span class="mr-2">Acquista Boa</span>
+					        <span class="text-warning">€ 5</span>
+
+					        <span class="float-right">
+					        	<button type="button" class="btn btn-danger" disabled>Acquistata</button>
+					        </span>
+			        
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+        	  
+        </div>
+
+    </div>
+</div>
+
+{% endif %}
+
+
+{% if TotCheckAcquistoMagliette > 0 %}
+
+<div class="container_no_max_width ContainerMagliette">
+    <div class="card mx-auto mt-5">
+        <div class="card-header titolo-evento">Magliette</div>
+        <div class="card-body p-4">
+    		<div class="row">
+
+    			{% if CheckAcquistoMaglietta1 == 1 %}
+
+		    		<div class="col-md-12 align-self-center" >
+					    <div class="card">
+					        <div class="card-header sfondo-azzurro_tema border-style-solid">
+						        <span class="mr-2">1 Maglietta</span>
+						        <span class="text-warning">€ {{ PREZZO_MAGLIETTA_1 }}</span>
+						        <span class="float-right">
+						        	<button
+						        		type="button"
+						        		class="btn btn-danger"
+						        		disabled
+						        	>In attesa di pagamento/Waiting payment</button>
+						        </span>
+							</div>
+						</div>
+					</div>
+
+				{% endif %}
+
+    			{% if CheckAcquistoMaglietta2 == 1 %}
+
+		    		<div class="col-md-12 align-self-center" >
+					    <div class="card">
+					        <div class="card-header sfondo-azzurro_tema border-style-solid">
+						        <span class="mr-2">2 Magliette</span>
+						        <span class="text-warning">€ {{ PREZZO_MAGLIETTA_2 }}</span>
+						        <span class="float-right">
+						        	<button
+						        		type="button"
+						        		class="btn btn-danger"
+						        		disabled
+						        	>In attesa di pagamento/Waiting payment</button>
+						        </span>
+							</div>
+						</div>
+					</div>
+
+				{% endif %}
+
+    			{% if CheckAcquistoMaglietta3 == 1 %}
+
+		    		<div class="col-md-12 align-self-center" >
+					    <div class="card">
+					        <div class="card-header sfondo-azzurro_tema border-style-solid">
+						        <span class="mr-2">3 Magliette</span>
+						        <span class="text-warning">€ {{ PREZZO_MAGLIETTA_3 }}</span>
+						        <span class="float-right">
+						        	<button
+						        		type="button"
+						        		class="btn btn-danger"
+						        		disabled
+						        	>In attesa di pagamento/Waiting payment test</button>
+						        </span>
+							</div>
+						</div>
+					</div>
+
+				{% endif %}
+                
+                <div class="col-md-12 text-right mt-2">
+                    <button 
+                        class="btn btn-danger cancella-magliette" 
+                        data-toggle="modal" 
+                        data-target="#modal-cancella-magliette"
+                        data-acquisti-magliette-id="{{ acquisti_magliette_id }}"
+                    >
+                        Rimuovi
+                    </button>
+                </div>
+			</div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+
+{% if ProdottiAcquisto|length > 0 %}
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="card mx-auto mt-5" >
+		        <div class="card-header titolo-evento text-warning"><i class="fa fa-shopping-cart" aria-hidden="true"></i> CARRELLO</div>
+		        <div class="card-body">
+
+		        	<div class="row">
+		        	    <div class="col-lg-12">
+		        	        <div class="panel panel-default">
+		        	            <div class="panel-heading"></div>
+		        	            <!-- /.panel-heading -->
+		        	            <div class="panel-body table-responsive">
+		        	                <table width="100%" class="table table-striped table-bordered table-hover" id="tabella_iscrizioni_anno">
+		        	                    <thead>
+		        	                        <tr class="sfondo-azzurro_tema">
+		        	                            <th class="text-center">Foto</th>
+		        	                            <th class="text-center">Descrizione</th>
+		        	                            <th class="text-center">Prezzo</th>
+		        	                            <th class="text-center">Quantità</th>
+		        	                        </tr>
+		        	                    </thead>
+		        	                    <tbody id="CarrelloShop">
+
+		        	                    	{% for prodotto_acquisto in ProdottiAcquisto %}
+		        	                    		<tr class="SezioneProdottoAggiunto">
+
+		        	                    			<td class="text-center">
+		        	                    				<img src="{{ prodotto_acquisto.foto_src }}" class="rounded-circle" width="100" height="100" alt="foto prodotto">
+		        	                    			</td>
+		        	                    			<td class="text-center">
+		        	                    				<span class="mr-2">{{ prodotto_acquisto.prodotto_nome }}</span>
+
+		        	                    				{% for attributo in prodotto_acquisto.AttributiProdotto %}
+    	                    					        	<div class="col-md-12 mt-1">
+    	                    									<h5 class="d-inline-flex mr-2">{{ attributo.attributo_nome|capitalize }}</h5> <span>{{ attributo.attributo_opzione_nome }}</span>
+    	                    								</div>
+		        	                    				{% endfor %}
+		        	                    			</td>
+		        	                    			<td class="text-center align-middle">€ {{ prodotto_acquisto.prezzo_effettivo }}</td>
+		        	                    			<td class="text-center align-middle">{{ prodotto_acquisto.quantita }}</td>
+		        	                    		</tr>
+		        	                    	{% endfor %}
+
+		        	                    </tbody>
+		        	                </table>
+		        	                <!-- /.table-responsive -->
+		        	            </div>
+		        	            <!-- /.panel-body -->
+		        	        </div>
+		        	        <!-- /.panel -->
+		        	    </div>
+		        	    <!-- /.col-lg-12 -->
+		        	</div>
+
+		        </div>
+		    </div>
+		</div>
+	</div>
+
+{% endif %}
+
+<div class="container col-md-10 mb-4" {% if Eventi|length < 1 and EventiIndividuali|length < 1 and TotCheckAcquistoMagliette < 0 %}hidden{% endif %}>
+    <div class="card mx-auto mt-5">
+        <div class="card-header titolo-evento text-center">Totale da pagare</div>
+        <div class="card-body p-4">
+        	<div class="row">
+
+				<div class="col-md-12">
+			        <div class="card-body">
+		        		<div class="col-md-12 m-auto text-center">
+				        	<div id="Totale">€ {{ TotaleDaPagareUtente }}</div>
+
+				        	{% if Utente.credito > 0 %}
+				        		<div class="text-success">Credito residuo: € {{ Utente.credito }}</div>
+				        	{% endif %}
+
+				        	<!--{% if TotaleScontoStaffette > 0 %}
+			        			<div class="text-success">Sconto staffette: € {{ TotaleScontoStaffette }}</div>
+			        		{% endif %}-->
+
+			        		{% for sconto in ListaScontiComboGare %}
+			        			<div class="text-success">{{ sconto.nome }}: - € {{ sconto.sconto }}</div>
+			        		{% endfor %}
+
+			        		{% if 
+			        				TotaleDaSaldare > 0 and
+			        				(
+			        					Utente.credito > 0 or 
+			        					TotaleScontoStaffette > 0 or
+			        					ListaScontiComboGare|length > 0
+			        				) 
+			        		%}
+			        			<div class="text-success">Da Saldare: € {{ TotaleDaSaldare }}</div>
+			        		{% endif %}
+
+				        	
+
+				        	<div class="row justify-content-center">
+								<div class="col-lg-4 m-auto p-3" hidden>
+								  <button type="button" class="btn btn-success" id="espandi_campo_coupon">Codice Coupon/Coupon Code</button>
+								</div>
+								<div class="col-lg-4 m-auto p-3"
+								{% if TotaleDaPagareUtente <= Utente.credito or true %}hidden{% endif %}
+								>
+								  <button type="button" class="btn btn-success" id="espandi_campo_paypal">Paga con Paypal/Credit Card</button>
+								</div>
+								<div class="col-lg-4 m-auto p-3"
+								{% if TotaleDaPagareUtente > Utente.credito %}hidden{% endif %}
+								>
+								  <button type="button" class="btn btn-success" id="espandi_campo_credito">Paga con Credito Account</button>
+								</div>
+							</div>
+
+							<div class="row" id="campo-nascosto-credito">
+								<div class="col-md-12 m-auto p-3">
+									<form action="{{AppPath}}Account/PagaConCredito" method="post" enctype="multipart/form-data">
+
+										<div class="form-group row justify-content-center">
+
+								            <div class="col-lg-8 p-3">
+								            	L'intero importo sarà scalato direttamente dal credito residuo.
+							                </div>
+
+							                {% embed "Templates/Informativa.html" %}{% endembed %}
+
+								            <div class="col-lg-4 m-auto">
+								              <button type="submit" name="PagaConCredito" class="btn button-azzurro btn-block mt-5">Conferma</button>
+								            </div>
+								        </div>
+
+									</form>
+								</div>
+							</div>
+
+							<div class="row" id="campo-nascosto-coupon">
+								<div class="col-md-12 m-auto p-3">
+									<form action="{{AppPath}}Account/CaricaCoupon" method="post" enctype="multipart/form-data">
+
+										<div class="form-group row justify-content-center">
+
+								            <div class="col-lg-8 p-3">
+							                  <div class="text-center p-1 etichetta">Codice coupon/ID Ordine/Email Ordine</div>
+							                  <div class="form-label-group">
+							                    <input type="text" step="0.01" min="0" class="form-control" name="CodiceCoupon" required>
+							                  </div>
+							                </div>
+
+							                {% embed "Templates/Informativa.html" %}{% endembed %}
+
+								            <div class="col-lg-4 m-auto">
+								              <button type="submit" class="btn button-azzurro btn-block mt-5">Conferma</button>
+								            </div>
+								        </div>
+
+									</form>
+								</div>
+							</div>
+
+							<div class="row" id="campo-nascosto">
+								<div class="col-md-12 m-auto p-3">
+									<form action="{{AppPath}}Account/CaricaBonifico" method="post" enctype="multipart/form-data">
+
+										<div class="form-group row">
+
+								            <div class="col-lg-4 m-auto p-3 text-center">
+								                <div class="text-center p-1 etichetta">File bonifico/Payment recipe</div>
+								                <div class="form-label-group">
+								                  <input type="file" class="form-control" name="FileBonifico" required>
+								                </div>
+								            </div>
+
+								            <div class="col-lg-4 p-3">
+							                  <div class="text-center p-1 etichetta">Data bonifico/Date transfer</div>
+							                  <div class="form-label-group">
+							                    <input type="text" class="form-control datepicker" name="DataBonifico" required>
+							                  </div>
+							                </div>
+
+								            <div class="col-lg-4 p-3">
+							                  <div class="text-center p-1 etichetta">Importo bonifico</div>
+							                  <div class="form-label-group">
+							                    <input type="number" step="0.01" min="0" class="form-control" name="ImportoBonifico" required>
+							                  </div>
+							                </div>
+
+						                	<div class="col-lg-10 m-auto">
+						                		<p>Per Bonifico: Conto intestato a Glaciali Societa' Sportiva Dilettantistica A R.I., IBAN IT41G0623010802000047178141. BIC/SWIFT CRPPIT2P351</p>
+						                		<p><strong>il pagamento va fatto contestualmente all' iscrizione</strong><br>
+						                		NB: <br>
+				                			    Controlla la quota corretta sulle pagine di ogni evento</p>
+						                		<p>IMPORTANTE <br>
+						                	</div>
+
+						                	{% embed "Templates/Informativa.html" %}{% endembed %}
+
+								            <div class="col-lg-4 m-auto">
+								              <button type="submit" class="btn button-azzurro btn-block mt-5">Conferma</button>
+								            </div>
+								        </div>
+
+									</form>
+								</div>
+							</div>
+
+							<div class="row" id="campo-nascosto-paypal">
+
+								{% embed "Templates/Informativa.html" %}{% endembed %}
+
+								<div class="col-md-12 m-auto p-3">
+				                	<div class="col-lg-10 m-auto">
+				                		<div class="mb-1">+ € {{ MaggiorazionePaypalEffettiva }} (Spese di gestione carta di credito/Credit card fee)
+				                		</div>
+				                		<div class="mb-4 text-success">
+				                			Totale da saldare con commissioni: € {{ TotaleDaSaldarePaypal }}
+				                		</div>
+				                		<div class="mb-4 text-success text-danger">
+				                			Clicca il tasto "Paypal" qui sotto per procedere al pagamento!
+				                		</div>
+				                	</div>
+									<div id="paypal-button-container"></div>
+									<!--
+									<div>
+										<form action="{{AppPath}}GestionePaypalIPNTest">
+											<button type="submit">Test pagamento paypal</button>
+										</form>
+									</div>
+									-->
+								</div>
+
+							</div>
+
+                            <div class="row justify-content-center">
+                                <div class="col-lg-4 m-auto p-3"
+								    {% 
+                                        if 
+                                            TotaleDaPagareUtente <= Utente.credito or 
+                                            (Impostazioni_AbilitaBonifico == 0 and TotaleDaPagareUtente < 200)
+                                    %}
+                                        hidden
+                                    {% endif %}
+								>
+							        <button type="button" class="btn btn-success" id="espandi_campo">Carica Bonifico/Bank Transfer</button>
+								</div>
+                            </div>
+
+				        </div>
+			        </div>
+				</div>
+
+        	</div>
+		</div>
+    </div>
+</div>
+
+{% if Eventi|length < 1 and EventiIndividuali|length < 1 and TotCheckAcquistoMagliette < 0 %}
+<div class="row">
+	<div class="col-lg-12 m-auto p-3 text-center">
+		Al momento non hai iscrizioni in corso
+	</div>
+</div>
+{% endif %}
+
+<div class="row" hidden>
+	<div class="col-lg-6 m-auto p-3 text-center">
+		<a href="{{AppPath}}Gare/Aperte">
+			<button type="button" class="btn button-azzurro">Iscriviti alle gare in corso</button>
+		</a>
+	</div>
+	<div class="col-lg-6 m-auto p-3 text-center">
+		<a href="{{AppPath}}Gare/Passate">
+			<button type="button" class="btn button-azzurro">Vai alle tue gare passate</button>
+		</a>
+	</div>
+</div>
+
+<!-- Modali per conferma cancellazione -->
+{% embed "Templates/modal_cancella_iscrizione.html" %}{% endembed %}
+{% embed "Templates/modal_cancella_opzione_acquisto.html" %}{% endembed %}
+{% embed "Templates/modal_cancella_maglietta.html" %}{% endembed %}
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_account').click();
+
+		// Mostra/Nascondi paga interamente con credito
+		var espandi_credito_flag= 0;
+		$('#campo-nascosto-credito').slideUp(0);
+
+		$(document).on('click', '#espandi_campo_credito', function()
+		{
+		  if (espandi_credito_flag == 0)
+		  {
+		    $('#campo-nascosto-credito').slideDown('slow');
+		    espandi_credito_flag= 1;
+		  }
+		  else
+		  {
+		    $('#campo-nascosto-credito').slideUp('slow');
+		    espandi_credito_flag= 0;
+		  }
+
+		  $('#campo-nascosto-paypal').slideUp('slow');
+		  espandi_paypal_flag= 0;
+
+		  $('#campo-nascosto').slideUp('slow');
+		  espandi_bonifico_flag= 0;
+
+		  $('#campo-nascosto-coupon').slideUp('slow');
+		  espandi_coupon_flag= 0;
+
+		});
+
+		// Mostra/Nascondi codice coupon
+		var espandi_coupon_flag= 0;
+		$('#campo-nascosto-coupon').slideUp(0);
+
+		$(document).on('click', '#espandi_campo_coupon', function()
+		{
+		  if (espandi_coupon_flag == 0)
+		  {
+		    $('#campo-nascosto-coupon').slideDown('slow');
+		    espandi_coupon_flag= 1;
+		  }
+		  else
+		  {
+		    $('#campo-nascosto-coupon').slideUp('slow');
+		    espandi_coupon_flag= 0;
+		  }
+
+		  $('#campo-nascosto-paypal').slideUp('slow');
+		  espandi_paypal_flag= 0;
+
+		  $('#campo-nascosto').slideUp('slow');
+		  espandi_bonifico_flag= 0;
+
+		  $('#campo-nascosto-credito').slideUp('slow');
+		  espandi_credito_flag= 0;
+
+		});
+
+		// Mostra/Nascondi caricamento bonifico
+		var espandi_bonifico_flag= 0;
+		$('#campo-nascosto').slideUp(0);
+
+		$(document).on('click', '#espandi_campo', function()
+		{
+		  if (espandi_bonifico_flag == 0)
+		  {
+		    $('#campo-nascosto').slideDown('slow');
+		    espandi_bonifico_flag= 1;
+		  }
+		  else
+		  {
+		    $('#campo-nascosto').slideUp('slow');
+		    espandi_bonifico_flag= 0;
+		  }
+
+		  $('#campo-nascosto-paypal').slideUp('slow');
+		   espandi_paypal_flag= 0;
+
+		  $('#campo-nascosto-coupon').slideUp('slow');
+		  espandi_coupon_flag= 0;
+
+		  $('#campo-nascosto-credito').slideUp('slow');
+		  espandi_credito_flag= 0;
+
+		});
+
+		// Mostra/Nascondi paga con Paypal
+		var espandi_paypal_flag= 0;
+		$('#campo-nascosto-paypal').slideUp(0);
+
+		$(document).on('click', '#espandi_campo_paypal', function()
+		{
+		  if (espandi_paypal_flag == 0)
+		  {
+		    $('#campo-nascosto-paypal').slideDown('slow');
+		    espandi_paypal_flag= 1;
+		  }
+		  else
+		  {
+		    $('#campo-nascosto-paypal').slideUp('slow');
+		    espandi_paypal_flag= 0;
+		  }
+
+		  $('#campo-nascosto').slideUp('slow');
+		   espandi_bonifico_flag= 0;
+
+		  $('#campo-nascosto-coupon').slideUp('slow');
+		  espandi_coupon_flag= 0;
+
+		  $('#campo-nascosto-credito').slideUp('slow');
+		  espandi_credito_flag= 0;
+
+		});
+
+		AggiornaScontiEventiQuantitaGare();
+	});
+</script>
+
+<script type="text/javascript">
+	
+
+	function AggiornaScontiEventiQuantitaGare()
+	{
+		var TotaleScontiEventiQuantitaGareDaApplicare = 0.00;
+
+		$('.SezioneEvento').each(function()
+		{
+			let gare_pagate = $(this).find('.EventoScontoQuantitaGaraPagata');
+			let gare_iscrizione = $(this).find('.EventoScontoQuantitaGaraIscrizione');
+			let gare_sconto_combo_applicato = $(this).find('.GaraScontoComboApplicato');
+
+			let gare_iscrizione_quantita = gare_iscrizione.length;
+			let gare_pagate_quantita = gare_pagate.length;
+			let gare_sconto_combo_applicato_quantita = gare_sconto_combo_applicato.length;
+			let totale_gare = gare_pagate_quantita + gare_iscrizione_quantita;
+
+			// Decrementa quantità indice in base a gare sconto combo
+			let totale_gare_index = totale_gare - gare_sconto_combo_applicato_quantita;
+			let gare_pagate_quantita_index = gare_pagate_quantita - gare_sconto_combo_applicato_quantita;
+
+			let lista_sconti = 
+			{
+				2: 5.00,
+				3: 12.00,
+				4: 20.00
+			};
+			let sconto = 0.00;
+			let sconto_applicato = 0.00;
+			let sconto_da_applicare = 0.00;
+
+			sconto_applicato = lista_sconti[gare_pagate_quantita_index] != undefined ? lista_sconti[gare_pagate_quantita_index] : 0.00;
+			sconto = lista_sconti[totale_gare_index] != undefined ? lista_sconti[totale_gare_index] : 0.00;
+			sconto_da_applicare = parseFloat(sconto - sconto_applicato).toFixed(2);
+
+			TotaleScontiEventiQuantitaGareDaApplicare += sconto_da_applicare;
+			
+			let stringa_aggiunta = '\
+				<div class="col-md-12 align-self-center">\
+				    <div class="card">\
+				        <div class="card-header sfondo-grigio border-style-solid">\
+					        <span class="mr-2">Sconto evento per quantità gare</span>\
+					        <span class="text-warning">\
+					        	<div>Gare: ' + totale_gare +  '</div>' +
+						        '<div>Gare escluse dallo sconto per sconto combo applicato: ' + gare_sconto_combo_applicato_quantita +  '</div>' +
+					        	'<div>Totale: € ' + sconto +  '</div>' +
+					        	'<div>Già saldato: € ' + sconto_applicato +  '</div>' +
+					        	'<div>Da applicare: € ' + sconto_da_applicare +  '</div>' +
+					        	'</span>\
+						</div>\
+					</div>\
+				</div>';
+
+				if (sconto > 0)
+					$(this).find('.SezioneScontiEventiQuantitaGare').html(stringa_aggiunta);
+				else
+					$(this).find('.SezioneScontiEventiQuantitaGare').html('');
+		});
+		
+		TotaleScontiEventiQuantitaGareDaApplicare = parseFloat(TotaleScontiEventiQuantitaGareDaApplicare).toFixed(2);
+
+		return TotaleScontiEventiQuantitaGareDaApplicare;
+	}
+</script>
+
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+<script>
+var MaggiorazionePaypalEffettiva= {{ MaggiorazionePaypalEffettiva }};
+var PrezzoPaypal= parseFloat({{ TotaleDaSaldare }} + MaggiorazionePaypalEffettiva).toFixed(2);
+
+// Render the PayPal button
+paypal.Button.render(
+{
+// Set your environment
+env: 'production', // sandbox | production
+
+// Specify the style of the button
+style:
+{
+  layout: 'horizontal',  // horizontal | vertical
+  size:   'medium',    // medium | large | responsive
+  shape:  'rect',      // pill | rect
+  color:  'blue',       // gold | blue | silver | white | black
+  fundingicons: 'false',
+  tagline: 'false'
+},
+
+// Specify allowed and disallowed funding sources
+//
+// Options:
+// - paypal.FUNDING.CARD
+// - paypal.FUNDING.CREDIT
+// - paypal.FUNDING.ELV
+funding:
+{
+  allowed:
+  [
+    paypal.FUNDING.CARD,
+    paypal.FUNDING.CREDIT
+  ],
+  disallowed: []
+},
+
+// Enable Pay Now checkout flow (optional)
+commit: true,
+
+// PayPal Client IDs - replace with your own
+// Create a PayPal app: https://developer.paypal.com/developer/applications/create
+client:
+{
+  sandbox: 'AafaMM6BzbpQiSu3jsL9djk9Tg_IXXqAG77uLjQxaQjYvlf_TyKkQt_3hBJIvp0QsjCyziTqUCqFZ9VO',
+  production: 'Af_tSgwBrJeETBQYim3yKtu8__GekURIb9wbvcqLCQFYvZ2cKuT9cdygpm56YWekSK0Jpe883bIXJXfP'
+},
+
+payment: function (data, actions)
+{
+  return actions.payment.create(
+  {
+    payment:
+    {
+      transactions:
+      [
+        {
+          amount:
+          {
+            total: PrezzoPaypal,
+            currency: 'EUR'
+          },
+          custom: '{{ IDUtente }}'
+        }
+      ]
+    },
+    experience:
+    {
+        input_fields:
+        {
+          no_shipping: 1
+        }
+    }
+  });
+},
+
+onAuthorize: function (data, actions) {
+  return actions.payment.execute()
+    .then(function () {
+      window.alert('Payment Complete!');
+      window.location.replace = '"{{ AppPath }}Account/Profile"';
+    });
+}
+}, '#paypal-button-container');
+</script>
+
+<script type="text/javascript">
+$(document).ready(function()
+{
+	var TotaleDaPagareUtente= parseFloat({{ TotaleDaPagareUtente }});
+	var Impostazioni_AbilitaBonifico = {{ Impostazioni_AbilitaBonifico }};
+
+	if (TotaleDaPagareUtente < 0.01)
+	{
+		$('#espandi_campo').parent().remove();
+		$('#espandi_campo_paypal').parent().remove();
+		$('#espandi_campo_credito').parent().remove();
+	}
+	else
+	{
+		$('#espandi_campo_coupon').parent().remove();
+		$('#campo-nascosto-coupon').remove();
+	}
+
+	if (Impostazioni_AbilitaBonifico == 0 && TotaleDaPagareUtente < 200)
+	{
+		$('#espandi_campo').parent().remove();
+		$('#campo-nascosto').remove();
+	}
+
+	{% if Utente.credito < TotaleDaPagareUtente %}
+
+		// Clicca in automatico tasto Paypal
+		$('#espandi_campo_paypal').click();
+
+		// Focus su Paypal
+		setTimeout(
+			function()
+			{ $('#espandi_campo_paypal')[0].scrollIntoView({ behavior: 'smooth', block: "start", inline: "nearest"}); }
+			, 1000
+		);
+
+	{% endif %}
+});
+</script>
+
+<script src="{{AppPath}}js/account/cancellazione_elementi_iscrizione.js?v=1.000003'"></script>
+
+{% endblock %}

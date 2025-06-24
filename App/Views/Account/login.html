@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+      <div class="card card-login mx-auto mt-5">
+        <div class="card-header">Login</div>
+        <div class="card-body">
+
+          <form action="{{AppPath}}Account/LoginConfirm" method="post">
+
+            <div class="form-group">
+              <div class="text-center p-1">Email</div>
+              <div class="form-label-group">
+                <input type="email" class="form-control" name="Email" placeholder="Email" required autofocus>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="text-center p-1">Password</div>
+              <div class="form-label-group">
+                <input type="password" class="form-control" name="Password" placeholder="Password" required>
+              </div>
+            </div>
+            {% if LoginFallito == 1 %}
+            	<div class="text-center text-danger p-2">Email o Password non corretti!</div>
+            {% elseif LoginFallito == 2 %}
+                <div class="text-center text-danger p-2">Utente disabilitato!</div>
+            {% endif %}
+             <button type="submit" class="btn btn-success btn-block">Login</button>
+
+          </form>
+
+          <div class="text-center">
+            <a class="d-block small mt-3" href="{{AppPath}}Account/Register">Registrati</a>
+            <a class="d-block small" href="{{AppPath}}Account/ForgotPassword">Recupera Password</a>
+            
+            <a href="{{AppPath}}Account/Register" class="btn btn-warning btn-icon-split">
+                    <span class="icon text-white-50">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                    <span class="text">REGISTRA NUOVO UTENTE</span>
+                  </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}

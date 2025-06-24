@@ -1,0 +1,399 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Lista Membri Squadra{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <li class="active">Lista Membri Squadra</li>
+	</li>
+</ol>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"></div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <table width="100%" class="table table-striped table-bordered table-hover" id="tabella-membri-squadra">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Iscrivi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	{% for Membro in MembriSquadra %}
+                    		<tr>
+                    			<td>{{ Membro.ID }}</td>
+                    			<td>{{ Membro.nome }} {{ Membro.cognome }}</td>
+                    			<td>
+                    				<a href="{{AppPath}}Gare/aperte/{{ Membro.ID }}/1">
+                    					<button type="button" class="btn button-azzurro btn-block">Iscrivi</button>
+                    				</a>
+                    			</td>
+                    		</tr>
+                    	{% endfor %}
+                    </tbody>
+                </table>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<h1 class="mt-5 mb-5">Iscrizioni da confermare</h1>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"></div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <table width="100%" class="table table-striped table-bordered table-hover" id="tabella-membri-squadra">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Totale</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for Membro in MembriSquadra %}
+                            {% if Membro.totale_da_pagare != 0 %}
+                                <tr>
+                                    <td>{{ Membro.ID }}</td>
+                                    <td>{{ Membro.nome }} {{ Membro.cognome }}</td>
+                                    <td>€ {{ Membro.totale_da_pagare }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="float-right">
+                    <h4>Totale da pagare € <span id="totale-iscrizione-squadra">{{ totale_da_pagare_squadra }}</span></h4>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+
+    {% if iscrizioni_pendenti %}
+        <div class="row">
+            <div class="col-lg-10 m-auto p-3">
+                <strong>DICHIARAZIONE / DECLARATION</strong> (richiesto):
+
+                <div class="row mt-3">
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>Il sottoscritto dichiara, sotto la propria responsabilità che:
+                            <br><br>
+                            - Sono veri i dati sopraindicati ed è in buona salute.
+                            <br>
+                            - E' abile nuotatore ed è fisicamente idoneo alla partecipazione della manifestazione sportiva non agonistica denominata ITALIAN OPEN WATER TOUR
+                            <br>
+                            - Verificata la validità delle condizioni di sicurezza predisposte, solleva gli Organizzatori della manifestazione da qualsiasi responsabilità civile e penale per qualsiasi danno materiale, fisico o morale, diretto o indiretto che potesse derivare al Partecipante medesimo da eventuali incidenti prima, durante e dopo lo svolgimento della manifestazione ad eccezione di quanto previsto dalla polizza assicurativa legata all’evento.
+                            <br>
+                            - Da il proprio consenso, ai sensi e per gli effetti della legge 196/2003, che i dati personali possano essere trattati anche con strumenti informatici esclusivamente nell’ambito della manifestazione sportiva per la quale la presente dichiarazione viene resa. Si da inoltre il consenso per l’utilizzo e la pubblicazione di tutte le immagini inerenti la manifestazione.
+                            <br>
+                            - Prende atto che, in caso di rinuncia, ovvero di annullamento della manifestazione per cause di forza maggiore (quali avverse condizioni meteo o altre non prevedibili) la quota di iscrizione versata non verrà restituita
+                            <br>
+                            - Di aver preso visione del regolamento della gara e dei consigli utili (nei regolamenti di ogni evento (<a href="http://www.italianopenwatertour.com/regolamenti" target="_blank">Regolamenti</a>) e di accettarli incondizionatamente
+                            <br>
+                            - Prende atto che il controllo della corretta avvenuta iscrizione ( pagamento + certificato medico) sia a carico dell’Iscritto e non dell’Organizzazione mediante la lista pubblicata on line su www.italianopewatertour.com
+                            <br>
+                            - Richiedo quindi di essere ammesso quale associato di Glaciali SSD A R.L per poter partecipare alle attività della Società Sportiva.
+                            <br>
+                            - Approvo specificatamente ai sensi degli artt. 1341 e 1342 c.c. di assumere ogni responsabilità che possa derivare dalla partecipazione alla manifestazione sportiva, di liberare ed esonerare la Glaciali SSD A R.L , i loro rappresentanti legali, i componenti del Comitato organizzatore e i volontari da ogni responsabilità civile e penale, anche oggettiva, diretta o indiretta.
+                            </small>
+                        </p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>The undersigned declares, under his/her own responsibility that:
+                            <br><br>
+                            - The over-mentioned information are true and he/she is healthy.
+                            <br>
+                            - He/she is a skilled swimmer and he/she is physically fit in order to take part in the not competitive sport event denominated ITALIAN OPEN WATER TOUR.
+                            <br>
+                            - He/she has verified the validity of the predisposed safety conditions, he/she declines the Organizers of the event from any civil and criminal liability for any material, physical or moral, direct or indirect damage that could derive to the Participant from possible accidents before, during and after the implementation of the event apart from what is included in the event insurance policy.
+                            <br>
+                            - He/she agrees, according to and for the effects of the law 196/2003, that the personal information can exclusively be processed by IT tools within the context of the sport event for which the present declaration is made. He/she agrees as well that all the inherent images about the event can be used and published.
+                            <br>
+                            - He/she has carefully read the rules of the competition and the useful suggestions in the rules of every event <a href="http://www.italianopenwatertour.com/regolamenti" target="_blank"> (Rules) </a> and to unconditionally accept them.
+                            <br>
+                            - He/she is aware that the verification of the correct registration (payment + medical certificate) depends on the affiliate member and not on the Organization through the online published list on www.italianopewatertour.com
+                            <br>
+                            - Therefore I require to be admitted as Associate member of Glaciali SSD A R.L in order to participate in the activities of the Association- I specifically approve to the senses of the art. 1341 and 1342 c.c. and assume every responsibility that can derive from the participation in the sport event, to free and to exonerate the Glaciali SDD A R.L, their legal representatives, the members of the organizing Committee and the volunteers from every civil and criminal liability, objective, direct or indirect as well.
+                            <br>
+                            - I specifically approve to the senses of the art. 1341 and 1342 c.c. and assume every responsibility that can derive from the participation in the sport event, to free and to exonerate the SSD Glaciali, their legal representatives, the members of the organizing Committee and the volunteers from every civil and criminal liability, objective, direct or indirect as well.
+
+                            </small>
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-lg-12 text-center">
+                        <input 
+                            type="checkbox" 
+                            name="accetto" 
+                            class="checkbox-dichiarazione"
+                            required
+                        > Accetto/Accept
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                Prende atto che, in caso di rinuncia, ovvero di annullamento della manifestazione per cause di forza maggiore (quali avverse condizioni meteo o altre non prevedibili) non sono previste date di recupero e la quota di iscrizione versata non verrà restituita.
+                            </small>
+                        </p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                He/she is aware that, in case of renouncement, or if the event is cancelled because of reasons of force majeure (such as very bad weather conditions or other not predictable reasons) there are no recovery dates and the registration fee won't be returned.
+                            </small>
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-lg-12 text-center">
+                        <input 
+                            type="checkbox" 
+                            name="accetto" 
+                            class="checkbox-dichiarazione"
+                            required
+                        > Accetto/Accept
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                Prende atto che, in caso di rinuncia, ovvero di annullamento della manifestazione per cause di forza maggiore quali decreti o ordinanze inerenti la gestione pandemica, sanitaria e dell’ordine pubblico la quota di iscrizione versata verrà commutata a voucher non cedibile e valido fino al Challenge pari al valore dell’80% della quota saldata.
+                            </small>
+                        </p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                He/she is aware that, in case of renouncement, or if the event is cancelled because of reasons of force majeure decrees or ordinances relating to pandemic, health and public order management the registration fee paid will be changed to a non-transferable voucher valid until Challenge equal to the value of 80% of the paid fee.
+                            </small>
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-lg-12 text-center">
+                        <input 
+                            type="checkbox" 
+                            name="accetto" 
+                            class="checkbox-dichiarazione"
+                            required
+                        > Accetto/Accept
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                Prende atto che in caso di infortuni o qualsiasi casistica che comporti l’impedimento alla partecipazione di un atleta già iscritto non sono previste date di recupero e la quota di iscrizione versata non verrà restituita.
+                            </small>
+                        </p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                Acknowledges that in case of injury or any case involving the inability of an already registered athlete to participate, there are no make-up dates and the registration fee paid will not be refunded.
+                            </small>
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-lg-12 text-center">
+                        <input 
+                            type="checkbox" 
+                            name="accetto" 
+                            class="checkbox-dichiarazione"
+                            required
+                        > Accetto/Accept
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                Prende atto che il numero minimo di iscrizioni previsto ad ogni tappa è di nr. 250 e che quindi in caso di rinuncia, ovvero di annullamento della manifestazione per mancato raggiungimento del numero minimo, la quota di iscrizione versata verrà commutata a voucher non cedibile e valido fino al Challenge pari al valore del 100% oppure verrà emesso un rimborso pari al valore dell’80% comprensivo di spese (da richiedersi entro e non oltre 10 giorni dalla data dell’evento annullato).
+                            </small>
+                        </p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                Acknowledges that the minimum number of entries expected for each stage is nr. 250 and that therefore in case of withdrawal, i.e. cancellation of the event due to failure to reach the minimum number, the entry fee paid will be switched to non-transferable voucher valid until Challenge equal to the value of 100% or a refund equal to the value of 80% including expenses will be issued (to be requested no later than 10 days from the date of the cancelled event).
+                            </small>
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-lg-12 text-center">
+                        <input 
+                            type="checkbox" 
+                            name="accetto" 
+                            class="checkbox-dichiarazione"
+                            required
+                        > Accetto/Accept
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                Prende atto che qualora l’atleta non restituisca il chip alla fine della propria gara automaticamente gli verrà addebitato il costo di 20,00€ nell’iscrizione alla gara successiva (se già iscritto verrà chiesto il saldo al ritiro del pacco gara).
+                            </small>
+                        </p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <p>
+                            <small>
+                                Notes that if the athlete does not return the chip at the end of his or her race, he or she will automatically be charged €20.00 in the registration for the next race (if already registered, the balance will be asked for when collecting the race pack).
+                            </small>
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-lg-12 text-center">
+                        <input 
+                            type="checkbox" 
+                            name="accetto" 
+                            class="checkbox-dichiarazione"
+                            required
+                        > Accetto/Accept
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-12 text-center text-danger" id="error-message"></div>
+                </div>
+            </div>
+        </div>
+
+        <button 
+            type="button" 
+            class="btn button-azzurro btn-block w-50" 
+            style="margin: 10px auto;"
+            id="conferma-iscrizioni-di-gruppo-button"
+        >
+            Conferma
+        </button>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        if ($(window).width() > 768) 
+            $('#dropdown-iscrizioni-squadre').click();
+
+        $('#menu-nuova-iscrizione-squadra').addClass('menu-link-attivo');
+
+        $(document).on('click', '#conferma-iscrizioni-di-gruppo-button', function()
+        {
+            // Elenco checkboxes dichiarazione
+            var DichiarazioneCheckboxes = $('.checkbox-dichiarazione');
+
+            // Reset messaggio di errore
+            $('#error-message').text();
+
+            // Impostazione variabile per tenere traccia dello stato delle checkboxes
+            var checkbox_attiva = 1;
+
+            // Ciclo checkboxes
+            DichiarazioneCheckboxes.each(function()
+            {
+                // Se checkbox non selezionata imposta variabile checkbox_attiva a 0
+                if (!$(this).is(':checked'))
+                {
+                    checkbox_attiva = 0;
+                    return false;
+                }
+            });
+
+            var totale_iscrizione_squadra = $('#totale-iscrizione-squadra').text();
+
+            if (checkbox_attiva)
+            {
+                $.ajax(
+                {
+                    type: 'POST',
+                    url: URL + '{{URL}}Gare/ajaxAggiungiIscrizioneSquadra',
+                    data: 
+                    {
+                        totale_iscrizione_squadra: totale_iscrizione_squadra
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(result)
+                    {
+                        location.reload();
+                    }
+                });
+            }
+            else
+                $('#error-message').text('Devi accettare tutti i punti della dichiarazione!');
+        });
+    });
+
+    function cancellaIscrizione(id_iscrizione, nome_utente, nome_gara)
+    {
+        $('#ModalTitoloConferma').text('Cancella Iscrizione');
+        $('#ModalTestoConferma').html('Cancellare iscrizione di <b>' + nome_utente + '</b> per gara ' + nome_gara + '?');
+        $('#ModalLinkCancella').attr('href', '{{AppPath}}AdminAccount/CancellaIscrizione/' + id_iscrizione + '/0');
+    }
+</script>
+
+{% endblock %}

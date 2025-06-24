@@ -1,0 +1,1401 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Gare Aperte{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Gare</a>
+	  <li class="breadcrumb-item active">Aperte</li>
+	</li>
+</ol>
+
+<h1>{{ UtenteDaIscrivere.nome }} {{ UtenteDaIscrivere.cognome }}</h1>
+
+<form action="{{AppPath}}Gare/ConfermaIscrizioni/{{ UtenteDaIscrivere.ID }}/{{ page }}" method="post">
+<input 
+	type="hidden" 
+	name="SelectBoa" 
+	id="SelectBoa" 
+	value="{% if BoaDaPagare == 0 %}0{% else %}1{% endif %}"
+>
+
+{% for evento_key, evento in Eventi %}
+
+<div class="container_no_max_width ContainerEvento">
+	<div class="card mx-auto mt-5">
+		<div class="card-header titolo-evento">
+			{{ evento.Gare.0.nome_evento }}
+			{% if evento.Gare.0.nome_evento == 'IOWT- CHRISTMAS PACK' %}
+			 <span class="text-danger text-center">Valido solo per chi deve registrare l'acquisto effettuato a Dicembre</span>
+			{% endif %}
+
+			<!--<span class="float-right">
+				<button 
+					type="button"
+					class="btn btn-light VediGareEvento"
+					data-open="0">Vedi Gare</button>
+			</span>-->
+		</div>
+
+		<div class="card-body p-4 SezioneEvento" data-evento-id="{{ evento_key }}">
+
+			<div class="row SezioneIscrizione">
+				{% for gara in evento.Gare %}
+
+					{% if 'now'|date('Y-m-d') <= gara.data_prezzo1 %}
+						{% set PrezzoStimato = gara.prezzo1 * (100 - gara.sconto_prezzo1) / 100 %}
+					{% elseif 'now'|date('Y-m-d') <= gara.data_prezzo2 %}
+						{% set PrezzoStimato = gara.prezzo2 * (100 - gara.sconto_prezzo2) / 100 %}
+					{% elseif 'now'|date('Y-m-d') <= gara.data_prezzo3 %}
+						{% set PrezzoStimato = gara.prezzo3 * (100 - gara.sconto_prezzo3) / 100 %}
+					{% else %}
+						{% set PrezzoStimato = gara.prezzo4 * (100 - gara.sconto_prezzo4) / 100 %}
+					{% endif %}
+
+					<div class="col-md-3 align-self-center">
+						<div class="card">
+							<div class="card-header sfondo-azzurro_tema border-style-solid">
+
+								<span class="mr-2">{{ gara.nome_gara }}</span>
+								<span class="text-warning">€ {{ PrezzoStimato }}</span><br>
+
+								<span class="float-right">
+									{% if gara.iscritto == 1 and gara.pagato == 1 %}
+										<button
+											type="button"
+											class="
+												btn
+												btn-warning
+												BoaCollegabile
+												EventoConOpzioneObbligatoria
+												EventoScontoQuantitaGaraPagata
+												{% if gara.sconto_combo_gara_applicato == 1 %}GaraScontoComboApplicato{% endif %}
+											"
+											data-nome-gara="{{ gara.nome_gara }}"
+											disabled>Pagato/Paid</button>
+									{% elseif gara.iscritto == 1 and gara.pagato == 0 %}
+										<button
+											type="button"
+											class="
+												btn
+												btn-danger
+												PrezziIscrizioni
+												BoaCollegabile
+												EventoConOpzioneObbligatoria
+												EventoScontoQuantitaGaraIscrizione
+												{% if gara.sconto_combo_gara_applicato == 1 %}GaraScontoComboApplicato{% endif %}
+											"
+											value="{{ PrezzoStimato }}"
+											data-nome-gara="{{ gara.nome_gara }}"
+											disabled>Iscritto/Ok</button>
+									{% elseif gara.iscritto_da_singole == 1 %}
+										<button
+											type="button"
+											class="
+												btn
+												btn-default
+												BoaCollegabile
+												EventoConOpzioneObbligatoria
+												EventoScontoQuantitaGaraIscrizione
+												{% if gara.sconto_combo_gara_applicato == 1 %}GaraScontoComboApplicato{% endif %}
+											"
+											value="{{ PrezzoStimato }}"
+											disabled>Iscritto da singole/Ok</button>
+									{% elseif gara.iscritto_da_combinata == 1 %}
+										<button
+											type="button"
+											class="
+												btn
+												btn-default
+												BoaCollegabile
+												EventoConOpzioneObbligatoria
+												{% if gara.sconto_combo_gara_applicato == 1 %}GaraScontoComboApplicato{% endif %}
+											"
+											value="{{ PrezzoStimato }}"
+											disabled>Iscritto da combinata/Ok</button>
+									{% elseif gara.iscritto_da_altra_combinata == 1 %}
+										<button
+											type="button"
+											class="
+												btn
+												btn-default
+												BoaCollegabile
+												EventoConOpzioneObbligatoria
+												EventoScontoQuantitaGaraIscrizione
+												{% if gara.sconto_combo_gara_applicato == 1 %}GaraScontoComboApplicato{% endif %}
+											"
+											value="{{ PrezzoStimato }}"
+											disabled>Iscritto da altra combinata/Ok</button>
+									{% else %}
+										{% if gara.gara_bloccata %}
+											<button class="btn btn-danger" disabled>
+												SOLD OUT
+											</button>
+										{% else %}
+											<button
+												type="button"
+												class="
+													btn 
+													btn-success 
+													controlla_disabled 
+													ButtonIscriviti
+												"
+												id_gara="{{ gara.ID_gara }}"
+												value="{{ PrezzoStimato }}"
+											>Iscriviti/Sign in</button>
+										{% endif %}
+									{% endif %}
+								</span>
+
+								<span class="InputNascosto"></span>
+
+								<span class="float-right mr-3" hidden>
+									{% if gara.prezzo_boa == 0.00 and gara.richiesta_boa == 0 %}
+										<button
+											type="button"
+											class="btn btn-success ButtonRichiediBoa ButtonBoaCliccabile"
+											data-gara-id="{{ gara.ID_gara }}"
+											data-evento-id="{{ evento_key }}"
+										>Richiedi Boa</button>
+									{% elseif gara.prezzo_boa == 0.00 and gara.richiesta_boa == 1 %}
+										<button type="button" class="btn btn-danger CalcolaTotaleBoeGare" disabled>Boa Richiesta</button>
+									{% elseif gara.prezzo_boa > 0.00 %}
+										<button type="button" class="btn btn-warning" disabled>Boa Pagata</button>
+									{% endif %}
+								</span>
+						
+							</div>
+
+						</div>
+					</div>
+
+				{% endfor %}
+
+			</div>
+
+			{% if evento.vendita_boa == 1 %}
+				<div class="row">
+
+					<div class="col-md-12 align-self-center">
+						<div class="card">
+							<div class="card-header sfondo-grigio border-style-solid">
+
+								<span class="mr-2">Acquista Boa</span>
+								<span class="text-warning">€ {{ PREZZO_BOA }}</span>
+
+								<span class="float-right">
+									{% if evento.prezzo_boa == 0.00 and evento.richiesta_boa == 0 %}
+										<button
+											type="button"
+											class="btn btn-success ButtonRichiediBoaDaEvento"
+											data-evento-id="{{ evento_key }}"
+										>Richiedi Boa</button>
+									{% elseif evento.prezzo_boa == 0.00 and evento.richiesta_boa == 1 %}
+										<button type="button" class="btn btn-danger" disabled>Boa Richiesta</button>
+									{% elseif evento.prezzo_boa > 0.00 %}
+										<button type="button" class="btn btn-warning" disabled>Boa Pagata</button>
+									{% endif %}
+								</span>
+						
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			{% endif %}
+
+			{% for opzione_acquisto_key, opzione_acquisto in evento.OpzioniAcquisto %}
+				<div class="row">
+
+					<div class="col-md-12 align-self-center">
+						<div class="card">
+							<div class="card-header sfondo-grigio border-style-solid">
+								<span class="InputNascosto"></span>
+								<input
+									type="hidden"
+									class="OpzioneAcquistoAttiva {% if opzione_acquisto.obbligatorio == 1 %}OpzioneAcquistoObbligatoria{% endif %}"
+									value="{% if opzione_acquisto.acquistato == 0 and opzione_acquisto.pagato == 0 %}0{% else %}1 {% endif %}">
+
+								<span class="mr-2">{{ opzione_acquisto_key }}</span>
+								<span class="text-warning mr-2">€ {{ opzione_acquisto.prezzo }}</span>
+								<span class="text-danger">{% if opzione_acquisto.obbligatorio == 1 %}Obbligatorio{% endif %}</span>
+
+								<span class="float-right">
+									{% if opzione_acquisto.acquistato == 0 and opzione_acquisto.pagato == 0 %}
+										<button
+											type="button"
+											class="btn btn-success ButtonAcquistaOpzioneEvento"
+											data-evento-id="{{ evento_key }}"
+											data-nome="{{ opzione_acquisto_key }}"
+											data-id="{{ opzione_acquisto.id }}"
+											data-price="{{ opzione_acquisto.prezzo }}"
+											data-obbligatorio="{{ opzione_acquisto.obbligatorio }}"
+										>Acquista</button>
+									{% elseif opzione_acquisto.acquistato == 1 and opzione_acquisto.pagato == 0 %}
+										<button
+											type="button"
+											class="btn btn-danger PrezziOpzioniAcquisto"
+											data-price="{{ opzione_acquisto.prezzo }}"
+											disabled>Da pagare</button>
+									{% elseif opzione_acquisto.pagato == 1 %}
+										<button type="button" class="btn btn-warning" disabled>Pagato</button>
+									{% endif %}
+								</span>
+						
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			{% endfor %}
+
+			<div class="row SezioneScontiEventiQuantitaGare"></div>
+
+			<div class="row mt-3">
+				<div class="col-md-12 text-center text-danger" id="Errore_Evento_ID_{{ evento_key }}"></div>
+			</div>
+			  
+		</div>
+
+	</div>
+</div>
+
+{% endfor %}
+
+<div class="container_no_max_width" hidden>
+	<div class="card mx-auto mt-5">
+		<div class="card-header titolo-evento">Varie/Other</div>
+		<div class="card-body p-4">
+			<div class="row">
+
+				{% if BoaDaPagare == 1 %}
+					<div class="col-md-12 align-self-center" >
+						<div class="card">
+							<div class="card-header sfondo-azzurro_tema border-style-solid">
+								<span class="mr-2">Acquista Boa /buy buoy</span>
+								<span class="text-warning">€ 5</span>
+								<span class="float-right">
+									{% if BoaDaPagare == 0 %}
+										<button type="button" class="btn btn-success AcquistaBoa controlla_disabled">Acquista/Buy buoy</button>
+									{% else %}
+										<button type="button" class="btn btn-danger" disabled>Acquistata/Purchased</button>
+									{% endif %}
+								</span>
+							</div>
+						</div>
+					</div>
+				{% else %}
+					<div class="col-md-12 align-self-center" >
+						<div class="card">
+							<div class="card-header sfondo-azzurro_tema border-style-solid">
+								<span class="mr-2">Boe terminate, impossibile acquistare una boa in questo momento</span>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+
+				{% if Utente.boa_numero != 0 %}
+				<div class="col-md-12 align-self-center">
+					<div class="card">
+						<div class="card-header sfondo-azzurro_tema border-style-solid">
+							<span class="mr-2">Utilizzo la mia boa ItalianOpenWater N° {{ Utente.boa_numero }}/I will use my ItalianOpenWater buoy N° {{ Utente.boa_numero }}</span>
+							<span class="float-right">
+								{% if BoaDaPagare == 0 %}
+									<button type="button" class="btn btn-success UsaBoaAttuale controlla_disabled">Seleziona/Select</button>
+								{% endif %}
+							</span>
+						</div>
+					</div>
+				</div>
+				{% endif %}
+
+				<div class="col-md-12 align-self-center">
+					<div class="card">
+						<div class="card-header sfondo-azzurro_tema border-style-solid">
+							<span class="mr-2">Porto una boa da casa (mi sarà assegnato un nuovo numero boa)/I will bring a buoy from home (a new buoy number will be assigned)</span>
+							<span class="float-right">
+								{% if BoaDaPagare == 0 %}
+									<button type="button" class="btn btn-success PortoBoaDaCasa controlla_disabled">Seleziona/Select</button>
+								{% endif %}
+							</span>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+{% if ScontiComboAttivabili|length > 0 %}
+	<div class="container_no_max_width ContainerScontiComboGare">
+		<div class="card mx-auto mt-5">
+			<div class="card-header titolo-evento">Sconti SPECIALI</div>
+			<div class="card-body p-4">
+				<div class="row">
+
+					{% for sconto in ScontiComboGare %}
+
+						{% if sconto.attivabile == 1 %}
+
+							<div class="col-md-12 align-self-center" >
+								<div class="card">
+									<div class="card-header sfondo-azzurro_tema border-style-solid">
+										<span class="mr-2">{{ sconto.nome }}</span>
+										<span class="text-warning">- € {{ sconto.sconto }}</span>
+										<span class="float-right">
+											{% if sconto.preseleziona == 0 %}
+												<button
+													type="button"
+													class="btn btn-success IscrivitiScontiComboGare"
+													data-lista-gare="{{ sconto.lista_gare }}"
+													data-sconto="{{ sconto.sconto }}"
+													data-attivo="0"
+												>Iscriviti/Sign in</button>
+											{% else %}
+												<button
+													type="button"
+													class="btn btn-success RimuoviScontiComboGare"
+													data-lista-gare="{{ sconto.lista_gare }}"
+													data-sconto="{{ sconto.sconto }}"
+													data-attivo="1"
+													disabled
+												>Attivato</button>
+											{% endif %}
+										</span>
+									</div>
+								</div>
+							</div>
+
+						{% endif %}
+
+					{% endfor %}
+				
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+{% if page == 0 %}
+	<div class="container_no_max_width ContainerMagliette" >
+		<div class="card mx-auto mt-5" >
+			<div class="card-header titolo-evento">PROMO ESCLUSIVA T-SHIRT OPENWATER -solo per gli iscritti</div>
+			<div class="card-body p-4">
+				<div class="row">
+
+					<div class="col-md-3" >
+						<img src="https://italianopenwatertour.com/wp-content/uploads/2020/06/owom_page-0001-scaled.jpg" class="rounded-circle" width="300px" height="300px" alt="t-shirt esclusiva">
+					</div>
+					
+					<div class="col-md-9" style="align-self:left" >
+
+						<div class="col-md-12 align-self-center" >
+							<div class="card">
+								<div class="card-header sfondo-azzurro_tema border-style-solid" style="background: #e52f2f">
+									<span class="mr-2">1 T-SHIRT</span>
+									<span class="text-warning">€ {{ PREZZO_MAGLIETTA_1 }}</span>
+									<span class="float-right">
+										{% if CheckAcquistoMaglietta1 == 0 %}
+											<button
+												type="button"
+												class="btn btn-success AcquistaMaglietta check_disabled_magliette"
+											>Acquista</button>
+										{% else %}
+											<button
+												type="button"
+												class="btn btn-warning check_disabled_magliette"
+											>Da pagare</button>
+										{% endif %}
+
+										<input
+											type="hidden"
+											class="InputMagliette"
+											name="AcquistaMaglietta1"
+											value="{% if CheckAcquistoMaglietta1 == 0 %}0{% else %}1{% endif %}"
+											data-price="{{ PREZZO_MAGLIETTA_1 }}">
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-12 align-self-center" >
+							<div class="card">
+								<div class="card-header sfondo-azzurro_tema border-style-solid" style="background: #e52f2f; font-size:16px">
+									<span class="mr-2">2 T-SHIRT</span>
+									<span class="text-warning">€ {{ PREZZO_MAGLIETTA_2 }}</span>
+									<span class="float-right">
+										{% if CheckAcquistoMaglietta2 == 0 %}
+										<button
+											type="button"
+											class="btn btn-success AcquistaMaglietta check_disabled_magliette"
+										>Acquista</button>
+										{% else %}
+											<button
+												type="button"
+												class="btn btn-warning check_disabled_magliette"
+											>Da pagare</button>
+										{% endif %}
+
+										<input
+											type="hidden"
+											class="InputMagliette"
+											name="AcquistaMaglietta2"
+											value="{% if CheckAcquistoMaglietta2 == 0 %}0{% else %}1{% endif %}"
+											data-price="{{ PREZZO_MAGLIETTA_2 }}">
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-12 align-self-center" >
+							<div class="card">
+								<div class="card-header sfondo-azzurro_tema border-style-solid" style="background: #e52f2f">
+									<span class="mr-2">3 T-SHIRT</span>
+									<span class="text-warning">€ {{ PREZZO_MAGLIETTA_3 }}</span>
+									<span class="float-right">
+										{% if CheckAcquistoMaglietta3 == 0 %}
+										<button
+											type="button"
+											class="btn btn-success AcquistaMaglietta check_disabled_magliette"
+										>Acquista</button>
+										{% else %}
+											<button
+												type="button"
+												class="btn btn-warning check_disabled_magliette"
+											>Da pagare</button>
+										{% endif %}
+
+										<input
+											type="hidden"
+											class="InputMagliette"
+											name="AcquistaMaglietta3"
+											value="{% if CheckAcquistoMaglietta3 == 0 %}0{% else %}1{% endif %}"
+											data-price="{{ PREZZO_MAGLIETTA_3 }}">
+									</span>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+<div class="container_no_max_width SezioneShop d-none">
+	<div class="card mx-auto mt-5" >
+		<div class="card-header titolo-evento">
+			<i class="fa fa-shopping-bag" aria-hidden="true"></i> SHOP
+			<span class="float-right">
+				<button 
+					type="button"
+					class="btn btn-light"
+					id="ApriShop"
+					data-open="0">Apri Shop</button>
+			</span>
+		</div>
+		<div class="card-body p-4 SezioneShop_Card">
+			<div class="row">
+
+				{% for prodotto in Prodotti %}
+
+					<div class="col-md-12 align-self-center SezioneProdotto">
+						<input type="hidden" class="Prodotto_Prezzo" value="{{ prodotto.prezzo }}">
+
+						<div class="card">
+							<div class="card-header sfondo-azzurro_tema border-style-solid">
+
+								<div class="row">
+
+									<div class="col-md-9 align-self-center">
+
+										<span class="mr-2">
+										{% if prodotto.foto != '' %}
+											<img src="{{AppPath}}{{ prodotto.foto }}" class="Prodotto_Foto rounded-circle" width="100" height="100" alt="foto prodotto">
+										{% else %}
+											<img src="{{AppPath}}img/no_image_available.png" class="Prodotto_Foto rounded-circle" width="100" height="100" alt="foto prodotto">
+										{% endif %}
+										</span>
+										<span class="mr-2 Prodotto_Nome">{{ prodotto.nome }}</span>
+										<span class="text-warning">€ {{ prodotto.prezzo }}</span>
+										<span class="mr-2">(Prezzo listino: € {{ prodotto.prezzo_listino }})</span>
+
+										{% for attributo in prodotto.AttributiProdotto %}
+											<div
+												class="col-md-12 mt-1 Prodotto_Attributo_{{ prodotto.ID }}"
+												data-attributo-id="{{ attributo.ID }}"
+												data-attributo-nome="{{ attributo.nome|capitalize }}"
+											>
+												<h5 class="d-inline-flex text-warning">{{ attributo.nome|capitalize }}</h5>
+											
+												<div class="col-md-3 d-inline-flex mt-1">
+													<select class="form-control show-disabled-options Prodotto_AttributoOpzioni">
+														{% for opzione in attributo.opzioni %}
+															<option
+																value="{{ opzione.IDAttributoOpzione }}"
+																data-selectable="{{ opzione.disponibile }}"
+																class="{% if opzione.disponibile == 0 %}text-danger{% endif %}"
+																{% if opzione.disponibile == 0 %}disabled{% endif %}
+															>{{ opzione.attributo_opzione_nome }}</option>
+														{% endfor %}
+													</select>
+												</div>
+											</div>
+										{% endfor %}
+
+									</div>
+
+									<div class="col-md-3 text-right">
+										<button
+											type="button"
+											class="btn btn-success mt-4 ButtonAggiungiProdotto"
+											data-prodotto-id="{{ prodotto.ID }}"
+										>Aggiungi</button>
+									</div>
+								</div>
+							
+						   
+							</div>
+
+						</div>
+					</div>
+
+				{% endfor %}
+
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card mx-auto mt-5" >
+						<div class="card-header titolo-evento text-warning"><i class="fa fa-shopping-cart" aria-hidden="true"></i> CARRELLO</div>
+						<div class="card-body">
+
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="panel panel-default">
+										<div class="panel-heading"></div>
+										<!-- /.panel-heading -->
+										<div class="panel-body table-responsive">
+											<table width="100%" class="table table-striped table-bordered table-hover" id="tabella_iscrizioni_anno">
+												<thead>
+													<tr class="sfondo-azzurro_tema">
+														<th class="text-center">Foto</th>
+														<th class="text-center">Descrizione</th>
+														<th class="text-center">Prezzo</th>
+														<th class="text-center">Quantità</th>
+														<th class="text-center">Rimuovi</th>
+													</tr>
+												</thead>
+												<tbody id="CarrelloShop">
+
+													{% for prodotto_acquisto in ProdottiAcquisto %}
+														<tr class="SezioneProdottoAggiunto">
+															<input type="hidden" name="ProdottiShop_ID[]" value="{{ prodotto_acquisto.IDProdotto }}">
+															<input type="hidden" name="ProdottiShop_Key[]" class="ProdottiShop_Key" value="{{ prodotto_acquisto.ID }}">
+															<input type="hidden" name="ProdottiShop_PrezzoEffettivo[]" class="ProdottiShop_PrezzoEffettivo" value="{{ prodotto_acquisto.prezzo_effettivo }}">
+
+															<td class="text-center">
+																<img src="{{ prodotto_acquisto.foto_src }}" class="rounded-circle" width="100" height="100" alt="foto prodotto">
+															</td>
+															<td class="text-center">
+																<span class="mr-2">{{ prodotto_acquisto.prodotto_nome }}</span>
+
+																{% for attributo in prodotto_acquisto.AttributiProdotto %}
+																	<div class="col-md-12 mt-1">
+																		<input type="hidden" name="ProdottiShop_Attributi[{{ prodotto_acquisto.ID }}][{{ attributo.attributo_ID }}]" value="{{ attributo.attributo_opzione_ID }}">
+																		<h5 class="d-inline-flex mr-2">{{ attributo.attributo_nome|capitalize }}</h5> <span>{{ attributo.attributo_opzione_nome }}</span>
+																	</div>
+																{% endfor %}
+															</td>
+															<td class="text-center align-middle">€ {{ prodotto_acquisto.prezzo_effettivo }}</td>
+															<td class="text-center align-middle">
+																<input
+																	type="number"
+																	min="1"
+																	max="100"
+																	step="1"
+																	name="ProdottiShop_Quantita[]"
+																	value="{{ prodotto_acquisto.quantita }}"
+																	class="form-control ProdottiShop_Quantita">
+															</td>
+															<td class="text-center align-middle">
+																<button
+																	type="button"
+																	class="btn btn-danger ButtonRimuoviProdotto"
+																>Rimuovi</button>
+															</td>
+														</tr>
+													{% endfor %}
+
+												</tbody>
+											</table>
+											<!-- /.table-responsive -->
+										</div>
+										<!-- /.panel-body -->
+									</div>
+									<!-- /.panel -->
+								</div>
+								<!-- /.col-lg-12 -->
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="container col-md-12 mb-4">
+	<div class="card mx-auto mt-5">
+		<div class="card-header text-center">
+			<span class="titolo-evento">Totale da pagare</span>
+			<span class="float-right mt-1 mr-4" id="Totale"></span>
+		</div>
+	</div>
+</div>
+
+	   
+{% if page == 0 %}
+	<div class="row">
+		<div class="col-lg-10 m-auto p-3">
+			<strong>DICHIARAZIONE / DECLARATION</strong> (richiesto):
+
+			<div class="row mt-3">
+
+				<div class="col-lg-6">
+					<p>
+						<small>Il sottoscritto dichiara, sotto la propria responsabilità che:
+						<br><br>
+						- Sono veri i dati sopraindicati ed è in buona salute.
+						<br>
+						- E' abile nuotatore ed è fisicamente idoneo alla partecipazione della manifestazione sportiva non agonistica denominata ITALIAN OPEN WATER TOUR
+						<br>
+						- Verificata la validità delle condizioni di sicurezza predisposte, solleva gli Organizzatori della manifestazione da qualsiasi responsabilità civile e penale per qualsiasi danno materiale, fisico o morale, diretto o indiretto che potesse derivare al Partecipante medesimo da eventuali incidenti prima, durante e dopo lo svolgimento della manifestazione ad eccezione di quanto previsto dalla polizza assicurativa legata all’evento.
+						<br>
+						- Da il proprio consenso, ai sensi e per gli effetti della legge 196/2003, che i dati personali possano essere trattati anche con strumenti informatici esclusivamente nell’ambito della manifestazione sportiva per la quale la presente dichiarazione viene resa. Si da inoltre il consenso per l’utilizzo e la pubblicazione di tutte le immagini inerenti la manifestazione.
+						<br>
+						- Prende atto che, in caso di rinuncia, ovvero di annullamento della manifestazione per cause di forza maggiore (quali avverse condizioni meteo o altre non prevedibili) la quota di iscrizione versata non verrà restituita
+						<br>
+						- Di aver preso visione del regolamento della gara e dei consigli utili (nei regolamenti di ogni evento (<a href="http://www.italianopenwatertour.com/regolamenti" target="_blank">Regolamenti</a>) e di accettarli incondizionatamente
+						<br>
+						- Prende atto che il controllo della corretta avvenuta iscrizione ( pagamento + certificato medico) sia a carico dell’Iscritto e non dell’Organizzazione mediante la lista pubblicata on line su www.italianopewatertour.com
+						<br>
+						- Richiedo quindi di essere ammesso quale associato di Glaciali SSD A R.L per poter partecipare alle attività della Società Sportiva.
+						<br>
+						- Approvo specificatamente ai sensi degli artt. 1341 e 1342 c.c. di assumere ogni responsabilità che possa derivare dalla partecipazione alla manifestazione sportiva, di liberare ed esonerare la Glaciali SSD A R.L , i loro rappresentanti legali, i componenti del Comitato organizzatore e i volontari da ogni responsabilità civile e penale, anche oggettiva, diretta o indiretta.
+						</small>
+					</p>
+				</div>
+
+				<div class="col-lg-6">
+					<p>
+						<small>The undersigned declares, under his/her own responsibility that:
+						<br><br>
+						- The over-mentioned information are true and he/she is healthy.
+						<br>
+						- He/she is a skilled swimmer and he/she is physically fit in order to take part in the not competitive sport event denominated ITALIAN OPEN WATER TOUR.
+						<br>
+						- He/she has verified the validity of the predisposed safety conditions, he/she declines the Organizers of the event from any civil and criminal liability for any material, physical or moral, direct or indirect damage that could derive to the Participant from possible accidents before, during and after the implementation of the event apart from what is included in the event insurance policy.
+						<br>
+						- He/she agrees, according to and for the effects of the law 196/2003, that the personal information can exclusively be processed by IT tools within the context of the sport event for which the present declaration is made. He/she agrees as well that all the inherent images about the event can be used and published.
+						<br>
+						- He/she has carefully read the rules of the competition and the useful suggestions in the rules of every event <a href="http://www.italianopenwatertour.com/regolamenti" target="_blank"> (Rules) </a> and to unconditionally accept them.
+						<br>
+						- He/she is aware that the verification of the correct registration (payment + medical certificate) depends on the affiliate member and not on the Organization through the online published list on www.italianopewatertour.com
+						<br>
+						- Therefore I require to be admitted as Associate member of Glaciali SSD A R.L in order to participate in the activities of the Association- I specifically approve to the senses of the art. 1341 and 1342 c.c. and assume every responsibility that can derive from the participation in the sport event, to free and to exonerate the Glaciali SDD A R.L, their legal representatives, the members of the organizing Committee and the volunteers from every civil and criminal liability, objective, direct or indirect as well.
+						<br>
+						- I specifically approve to the senses of the art. 1341 and 1342 c.c. and assume every responsibility that can derive from the participation in the sport event, to free and to exonerate the SSD Glaciali, their legal representatives, the members of the organizing Committee and the volunteers from every civil and criminal liability, objective, direct or indirect as well.
+
+						</small>
+					</p>
+				</div>
+
+			</div>
+
+			<div class="row mt-3">
+				<div class="col-lg-12 text-center">
+					<input type="checkbox" name="accetto" required> Accetto/Accept
+				</div>
+			</div>
+
+			<div class="row mt-5">
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							Prende atto che, in caso di rinuncia, ovvero di annullamento della manifestazione per cause di forza maggiore (quali avverse condizioni meteo o altre non prevedibili) non sono previste date di recupero e la quota di iscrizione versata non verrà restituita.
+						</small>
+					</p>
+				</div>
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							He/she is aware that, in case of renouncement, or if the event is cancelled because of reasons of force majeure (such as very bad weather conditions or other not predictable reasons) there are no recovery dates and the registration fee won't be returned.
+						</small>
+					</p>
+				</div>
+
+			</div>
+
+			<div class="row mt-3">
+				<div class="col-lg-12 text-center">
+					<input type="checkbox" name="accetto" required> Accetto/Accept
+				</div>
+			</div>
+
+			<div class="row mt-5">
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							Prende atto che, in caso di rinuncia, ovvero di annullamento della manifestazione per cause di forza maggiore quali decreti o ordinanze inerenti la gestione pandemica, sanitaria e dell’ordine pubblico la quota di iscrizione versata verrà commutata a voucher non cedibile e valido fino al Challenge pari al valore dell’80% della quota saldata.
+						</small>
+					</p>
+				</div>
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							He/she is aware that, in case of renouncement, or if the event is cancelled because of reasons of force majeure decrees or ordinances relating to pandemic, health and public order management the registration fee paid will be changed to a non-transferable voucher valid until Challenge equal to the value of 80% of the paid fee.
+						</small>
+					</p>
+				</div>
+
+			</div>
+
+			<div class="row mt-3">
+				<div class="col-lg-12 text-center">
+					<input type="checkbox" name="accetto" required> Accetto/Accept
+				</div>
+			</div>
+
+			<div class="row mt-5">
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							Prende atto che in caso di infortuni o qualsiasi casistica che comporti l’impedimento alla partecipazione di un atleta già iscritto non sono previste date di recupero e la quota di iscrizione versata non verrà restituita.
+						</small>
+					</p>
+				</div>
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							Acknowledges that in case of injury or any case involving the inability of an already registered athlete to participate, there are no make-up dates and the registration fee paid will not be refunded.
+						</small>
+					</p>
+				</div>
+
+			</div>
+
+			<div class="row mt-3">
+				<div class="col-lg-12 text-center">
+					<input type="checkbox" name="accetto" required> Accetto/Accept
+				</div>
+			</div>
+
+			<div class="row mt-5">
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							Prende atto che il numero minimo di iscrizioni previsto ad ogni tappa è di nr. 250 e che quindi in caso di rinuncia, ovvero di annullamento della manifestazione per mancato raggiungimento del numero minimo, la quota di iscrizione versata verrà commutata a voucher non cedibile e valido fino al Challenge pari al valore del 100% oppure verrà emesso un rimborso pari al valore dell’80% comprensivo di spese (da richiedersi entro e non oltre 10 giorni dalla data dell’evento annullato).
+						</small>
+					</p>
+				</div>
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							Acknowledges that the minimum number of entries expected for each stage is nr. 250 and that therefore in case of withdrawal, i.e. cancellation of the event due to failure to reach the minimum number, the entry fee paid will be switched to non-transferable voucher valid until Challenge equal to the value of 100% or a refund equal to the value of 80% including expenses will be issued (to be requested no later than 10 days from the date of the cancelled event).
+						</small>
+					</p>
+				</div>
+
+			</div>
+
+			<div class="row mt-3">
+				<div class="col-lg-12 text-center">
+					<input type="checkbox" name="accetto" required> Accetto/Accept
+				</div>
+			</div>
+
+			<div class="row mt-5">
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							Prende atto che qualora l’atleta non restituisca il chip alla fine della propria gara automaticamente gli verrà addebitato il costo di 20,00€ nell’iscrizione alla gara successiva (se già iscritto verrà chiesto il saldo al ritiro del pacco gara).
+						</small>
+					</p>
+				</div>
+
+				<div class="col-lg-6">
+					<p>
+						<small>
+							Notes that if the athlete does not return the chip at the end of his or her race, he or she will automatically be charged €20.00 in the registration for the next race (if already registered, the balance will be asked for when collecting the race pack).
+						</small>
+					</p>
+				</div>
+
+			</div>
+
+			<div class="row mt-3">
+				<div class="col-lg-12 text-center">
+					<input type="checkbox" name="accetto" required> Accetto/Accept
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+{% endif %}
+
+<div class="row">
+	<div class="col-lg-3 m-auto p-3">
+	  	<div class="text-center text-danger" id="errore-opzione-obbligatoria-non-selezionata"></div>
+	  	<button type="button" class="btn button-azzurro btn-block mt-5" id="ConfermaIscrizioni">
+			{% if page == 0 %}
+				Continua e vai al pagamento
+			{% else %}
+				Iscrivi membro squadra
+			{% endif %}
+	  	</button>
+	  	<button type="submit" name="ConfermaIscrizioniForm" id="ConfermaIscrizioniForm" hidden>Conferma Form</button>
+	</div>
+</div>
+
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_gare').click();
+
+		AggiornaTotale();
+
+		// Apri shop
+		//$('.SezioneShop_Card').slideUp(1);
+
+		$(document).on('click', '#ApriShop', function()
+		{
+			if ( $(this).data('open') == 0 )
+			{
+				$(this).closest('.SezioneShop').find('.SezioneShop_Card').slideDown('slow');
+				$(this).data('open', 1);
+			}
+			else
+			{
+				$(this).closest('.SezioneShop').find('.SezioneShop_Card').slideUp('slow');
+				$(this).data('open', 0);
+			}
+		});
+
+		// Aggiungi prodotto
+		$(document).on('click', '.ButtonAggiungiProdotto', function()
+		{
+			let prodotto_key = GeneraProdottoKey();
+			let prodotto_ID = $(this).data('prodotto-id');
+			let prodotto_foto_src = $(this).closest('.SezioneProdotto').find('.Prodotto_Foto').attr('src');
+			let prodotto_foto = '<img src="' + prodotto_foto_src + '" class="rounded-circle" width="100" height="100" alt="foto prodotto">';
+			let prodotto_nome = $(this).closest('.SezioneProdotto').find('.Prodotto_Nome').text();
+			let prodotto_prezzo = $(this).closest('.SezioneProdotto').find('.Prodotto_Prezzo').val();
+			let attributi_prodotto = [];
+
+			// Attributi
+			$('.Prodotto_Attributo_' + prodotto_ID).each(function()
+			{
+				let attributo_prodotto = {};
+				attributo_prodotto.ID = $(this).data('attributo-id');
+				attributo_prodotto.nome = $(this).data('attributo-nome');
+				attributo_prodotto.valore = $(this).find('.Prodotto_AttributoOpzioni option:selected').val();
+				attributo_prodotto.valore_nome = $(this).find('.Prodotto_AttributoOpzioni option:selected').text();
+
+				attributi_prodotto.push(attributo_prodotto);
+			});
+
+			let prodotto_lista_attributi_html = '';
+
+			for (let attributo of attributi_prodotto)
+			{
+				prodotto_lista_attributi_html += `
+					<div class="col-md-12 mt-1">
+						<input type="hidden" name="ProdottiShop_Attributi[` + prodotto_key + `][` + attributo.ID + `]" value="` + attributo.valore + `">
+						<h5 class="d-inline-flex mr-2">` + attributo.nome + `</h5> <span>` + attributo.valore_nome + `</span>
+					</div>
+				`;
+			}
+
+			let riga_prodotto = `
+				<tr class="SezioneProdottoAggiunto">
+					<input type="hidden" name="ProdottiShop_ID[]" value="` + prodotto_ID + `">
+					<input type="hidden" name="ProdottiShop_Key[]" class="ProdottiShop_Key" value="` + prodotto_key + `">
+					<input type="hidden" name="ProdottiShop_PrezzoEffettivo[]" class="ProdottiShop_PrezzoEffettivo" value="` + prodotto_prezzo + `">
+
+					<td class="text-center">` + prodotto_foto + `</td>
+					<td class="text-center">
+						<span class="mr-2">` + prodotto_nome + `</span>` + prodotto_lista_attributi_html + `
+					</td>
+					<td class="text-center align-middle">€ ` + prodotto_prezzo + `</td>
+					<td class="text-center align-middle">
+						<input
+							type="number"
+							min="1"
+							max="100"
+							step="1"
+							name="ProdottiShop_Quantita[]"
+							value="1"
+							class="form-control ProdottiShop_Quantita">
+					</td>
+					<td class="text-center align-middle">
+						<button
+							type="button"
+							class="btn btn-danger ButtonRimuoviProdotto"
+						>Rimuovi</button>
+					</td>
+				</tr>
+			`;
+
+			$('#CarrelloShop').append(riga_prodotto);
+
+			AggiornaTotale();
+		});
+
+		// Rimuovi prodotto
+		$(document).on('click', '.ButtonRimuoviProdotto', function()
+		{
+			$(this).closest('.SezioneProdottoAggiunto').remove();
+
+			AggiornaTotale();
+		});
+
+		// Aggiorna totale al cambio quantità prodotto aggiunto
+		$(document).on('change', '.ProdottiShop_Quantita', function()
+		{
+			AggiornaTotale();
+		});
+
+		// Submit ConfermaIscrizioni
+		$(document).on('click', '#ConfermaIscrizioni', function()
+		{
+			// Controlla che non ci siano opzioni acquisti obbligatori se iscritti ad almeno una gara di quell'evento
+			let opzioni_obbligatorie_errore = 0;
+			var errore_evento_id = 0;
+
+			// Rimozione messaggio di errore 'acquisti opzionali obbligatori'
+			$('#errore-opzione-obbligatoria-non-selezionata').text('')
+
+			$('.EventoConOpzioneObbligatoria').each(function()
+			{
+				let BaseEvento = $(this).closest('.SezioneEvento');
+				errore_evento_id = $(BaseEvento).data('evento-id');
+				let OpzioniObbligatorie = $(BaseEvento).find('.OpzioneAcquistoObbligatoria');
+
+				$(OpzioniObbligatorie).each(function()
+				{
+					if ($(this).val() == 0)
+						opzioni_obbligatorie_errore = errore_evento_id;
+				});
+			});
+
+			// Conferma form
+			if (opzioni_obbligatorie_errore == 0)
+			{
+				$('#ConfermaIscrizioniForm').click();
+			}
+			else
+			{
+				$('#errore-opzione-obbligatoria-non-selezionata').text('In uno o più eventi sono richiesti degli acquisti opzionali obbligatori!');
+				$('#Errore_Evento_ID_' + opzioni_obbligatorie_errore).text('Questo evento richiede un acquisto opzionale obbligatorio!');
+				$('#Errore_Evento_ID_' + opzioni_obbligatorie_errore).get(0).scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+			}
+		});
+
+		// Iscrizione
+		$(document).on('click', '.ButtonIscriviti', function()
+		{
+			var IDGara= $(this).attr('id_gara');
+			var NomeGara= $(this).attr('nome_gara');
+			var PrezzoGara= $(this).val();
+			var Base= $(this).parent().parent().parent().parent().parent().parent();
+			
+			$(this).removeClass('ButtonIscriviti btn-success').addClass('btn-danger ButtonDisiscriviti PrezziIscrizioni BoaCollegabile EventoConOpzioneObbligatoria EventoScontoQuantitaGaraIscrizione').text('Rimuovi/Remove');
+			$(this).parent().parent().find('.InputNascosto').html('<input type="hidden" name="IDGareIscrizioni[]" value="' + IDGara + '">');
+			
+			AggiornaTotale();
+		});
+
+		// Rimuovi Iscrizione
+		$(document).on('click', '.ButtonDisiscriviti', function()
+		{
+			var IDGara= $(this).attr('id_gara');
+			var PrezzoGara= $(this).val();
+			var Base= $(this).parent().parent().parent().parent().parent().parent();
+
+			// Rimuove eventuale boa collegata
+			var BoaCollegataGara = $(this).closest('.SezioneIscrizione').find('.ButtonRimuoviBoa');
+			
+			if (BoaCollegataGara.length > 0)
+			{
+				var TastoBoaEvento = $(this).closest('.SezioneEvento').find('.ButtonRimuoviBoaDaEvento');
+				TastoBoaEvento.click();
+			}
+
+			$(this).removeClass('ButtonDisiscriviti btn-danger PrezziIscrizioni BoaCollegabile EventoConOpzioneObbligatoria EventoScontoQuantitaGaraIscrizione').addClass('btn-success ButtonIscriviti').text('Iscriviti/Sign in');
+			$(this).parent().parent().find('.InputNascosto').html('');
+
+			ControllaValiditaScontoComboGaraADisiscrizioneGara(IDGara);
+			
+			AggiornaTotale();
+
+			if (TastoBoaEvento)
+				TastoBoaEvento.click(); // Doppio click per provare a riassegnare la boa ad un'altra gara
+		});
+
+		// Acquista opzione acquisto evento
+		$(document).on('click', '.ButtonAcquistaOpzioneEvento', function()
+		{
+			$(this).removeClass('ButtonAcquistaOpzioneEvento btn-success').addClass('btn-danger ButtonRimuoviOpzioneEvento PrezziOpzioniAcquisto').text('Rimuovi/Remove');
+			$(this).parent().parent().find('.InputNascosto').html('\
+				<input type="hidden" name="IDOpzioniAcquistoEvento[]" value="' + $(this).data('id') + '">\
+				<input type="hidden" name="NomiOpzioniAcquistoEvento[]" value="' + $(this).data('nome') + '">\
+			');
+			$(this).parent().parent().find('.OpzioneAcquistoAttiva').val(1);
+
+			AggiornaTotale();
+		});
+
+		// Rimuovi opzione acquisto evento
+		$(document).on('click', '.ButtonRimuoviOpzioneEvento', function()
+		{
+			$(this).removeClass('ButtonRimuoviOpzioneEvento btn-danger PrezziOpzioniAcquisto').addClass('btn-success ButtonAcquistaOpzioneEvento').text('Acquista');
+			$(this).parent().parent().find('.InputNascosto').html('');
+			$(this).parent().parent().find('.OpzioneAcquistoAttiva').val(0);
+
+			AggiornaTotale();
+		});
+
+		// Richiedi boa gara
+		$(document).on('click', '.ButtonRichiediBoa', function()
+		{
+			var IDGara = $(this).data('gara-id');
+
+			$(this).removeClass('btn-success ButtonRichiediBoa');
+			$(this).addClass('btn-danger ButtonRimuoviBoa');
+			$(this).text('Rimuovi Boa');
+
+			$(this).parent().append('<input type="hidden" class="RichiestaBoeGare CalcolaTotaleBoeGare" name="RichiestaBoeGare[]" value="' + IDGara + '">');
+
+			AggiornaTotale();
+
+		});
+
+		// Rimuovi boa gara
+		$(document).on('click', '.ButtonRimuoviBoa', function()
+		{
+			$(this).removeClass('btn-danger ButtonRimuoviBoa');
+			$(this).addClass('btn-success ButtonRichiediBoa');
+			$(this).text('Richiedi Boa');
+
+			$(this).parent().find('.RichiestaBoeGare').remove();
+
+			AggiornaTotale();
+		});
+
+		// Richiedi boa da evento
+		$(document).on('click', '.ButtonRichiediBoaDaEvento', function()
+		{
+			var IDEvento = $(this).data('evento-id');
+
+			$('#Errore_Evento_ID_' + IDEvento).text('');
+
+			var BoaCollegabile = $(this).closest('.SezioneEvento').find('.BoaCollegabile:first');
+
+			if (BoaCollegabile.length > 0)
+			{
+				$(this).removeClass('btn-success ButtonRichiediBoaDaEvento');
+				$(this).addClass('btn-danger ButtonRimuoviBoaDaEvento');
+				$(this).text('Rimuovi Boa');
+
+				$(BoaCollegabile).closest('.SezioneIscrizione').find('.ButtonRichiediBoa').click();
+			}
+			else
+				$('#Errore_Evento_ID_' + IDEvento).text('Per poter richiedere la boa devi iscriverti almeno ad una gara dell\'evento');
+
+			AggiornaTotale();
+
+		});
+
+		// Rimuovi boa da evento
+		$(document).on('click', '.ButtonRimuoviBoaDaEvento', function()
+		{
+			var IDEvento = $(this).data('evento-id');
+
+			$(this).removeClass('btn-danger ButtonRimuoviBoaDaEvento');
+			$(this).addClass('btn-success ButtonRichiediBoaDaEvento');
+			$(this).text('Richiedi Boa');
+
+			// Clicca riga boa gare evento
+			var BoeGareEvento = $(this).closest('.SezioneEvento').find('.ButtonRimuoviBoa');
+			BoeGareEvento.click();
+
+			AggiornaTotale();
+		});
+
+		// Espandi gare evento
+		/*$('.SezioneEvento').slideUp(1);
+		$(document).on('click', '.VediGareEvento', function()
+		{
+			if ( $(this).data('open') == 0 )
+			{
+				$(this).closest('.ContainerEvento').find('.SezioneEvento').slideDown('slow');
+				$(this).data('open', 1);
+			}
+			else
+			{
+				$(this).closest('.ContainerEvento').find('.SezioneEvento').slideUp('slow');
+				$(this).data('open', 0);
+			}
+		});*/
+
+		// Acquista maglietta
+		$(document).on('click', '.AcquistaMaglietta', function()
+		{
+			$(this).removeClass('AcquistaMaglietta btn-success').addClass('RimuoviMaglietta btn-danger').text('Rimuovi');
+			$(this).next().val(1);
+			$(this).closest('.ContainerMagliette').find('.check_disabled_magliette').prop('disabled', true);
+			$(this).prop('disabled', false);
+
+			AggiornaTotale();
+		});
+
+		// Rimuovi maglietta
+		$(document).on('click', '.RimuoviMaglietta', function()
+		{
+			$(this).removeClass('RimuoviMaglietta btn-danger').addClass('AcquistaMaglietta btn-success').text('Acquista');
+			$(this).next().val(0);
+			$(this).closest('.ContainerMagliette').find('.check_disabled_magliette').prop('disabled', false);
+
+			AggiornaTotale();
+		});
+
+		// Se magliette già richieste, disabilita input
+		if ({{ TotCheckAcquistoMagliette }} > 0)
+			$('.ContainerMagliette').find('.check_disabled_magliette').prop('disabled', true);
+
+		// Iscrizione sconti combo gare
+		$(document).on('click', '.IscrivitiScontiComboGare', function()
+		{
+			$(this).removeClass('IscrivitiScontiComboGare btn-success').addClass('RimuoviScontiComboGare btn-danger').text('Rimuovi/Remove');
+
+			var sconto_lista_gare = $(this).data('lista-gare');
+			var ListaGare = sconto_lista_gare.split(",");
+
+			for (var IDGara of ListaGare)
+			{
+				$('.ButtonIscriviti').each(function()
+				{
+					if ( $(this).attr('id_gara') == IDGara )
+						$(this).addClass('GaraScontoComboApplicato').click();
+				});
+			}
+
+			$(this).data('attivo', 1);
+
+			AggiornaTotale();
+		});
+
+		// Rimuovi iscrizione sconti combo gare
+		$(document).on('click', '.RimuoviScontiComboGare', function()
+		{
+			$(this).removeClass('RimuoviScontiComboGare btn-danger').addClass('IscrivitiScontiComboGare btn-success').text('Iscriviti/Sign in');
+
+			var sconto_lista_gare = $(this).data('lista-gare');
+			var ListaGare = sconto_lista_gare.split(",");
+
+			for (var IDGara of ListaGare)
+			{
+				$('.ButtonDisiscriviti').each(function()
+				{
+					if ( $(this).attr('id_gara') == IDGara )
+						$(this).click();
+				});
+			}
+
+			$(this).data('attivo', 0);
+
+			AggiornaTotale();
+		});
+
+		function ControllaValiditaScontoComboGaraADisiscrizioneGara(IDGara)
+		{
+			$('.RimuoviScontiComboGare').each(function()
+			{
+				var sconto_lista_gare = $(this).data('lista-gare');
+				var ListaGare = sconto_lista_gare.split(",");
+
+				for (var gara of ListaGare)
+				{
+					if (gara == IDGara)
+					{
+						$(this).click();
+						break;
+					}
+				}
+			});
+		}
+
+		function AggiornaTotale()
+		{
+			var Totale= 0.00;
+			var PrezzoBoa = {{ PREZZO_BOA }};
+			var TotaleScontiEventiQuantitaGare = AggiornaScontiEventiQuantitaGare();
+			Totale -= TotaleScontiEventiQuantitaGare;
+
+			// Prezzi iscrizioni
+			$('.PrezziIscrizioni').each(function()
+			{
+				Totale += parseFloat(this.value);
+			});
+
+			// Prezzo opzioni acquisto eventi
+			$('.PrezziOpzioniAcquisto').each(function()
+			{
+				Totale += parseFloat($(this).data('price'));
+			});
+
+			if ( $('#SelectBoa').val() == 1 ) Totale += 5.00;
+
+			// Aggiunge boe gara
+			var BoeGaraValore = $('.CalcolaTotaleBoeGare').length * PrezzoBoa;
+			Totale += BoeGaraValore;
+
+			// Aggiunge magliette
+			$('.InputMagliette').each(function()
+			{
+				if ($(this).val() == 1)
+					Totale += parseFloat( $(this).data('price') );
+			});
+
+			// Sottrae sconti combo gare
+			$('.RimuoviScontiComboGare').each(function()
+			{
+				if ($(this).data('attivo') == 1)
+				{
+					Totale -= parseFloat( $(this).data('sconto') );
+				}
+			});
+
+			// Aggiunge shop
+			$('.ProdottiShop_PrezzoEffettivo').each(function()
+			{
+				let prezzo_prodotto = $(this).val();
+				let quantita_prodotto = $(this).closest('.SezioneProdottoAggiunto').find('.ProdottiShop_Quantita').val();
+
+				Totale += parseFloat( prezzo_prodotto * quantita_prodotto );
+			});
+
+			Totale= parseFloat(Totale).toFixed(2);
+
+			$('#Totale').text('€ ' + Totale);
+		}
+
+		function AggiornaScontiEventiQuantitaGare()
+		{
+			var TotaleScontiEventiQuantitaGareDaApplicare = 0.00;
+
+			$('.SezioneEvento').each(function()
+			{
+				let gare_pagate = $(this).find('.EventoScontoQuantitaGaraPagata');
+				let gare_iscrizione = $(this).find('.EventoScontoQuantitaGaraIscrizione');
+				let gare_sconto_combo_applicato = $(this).find('.GaraScontoComboApplicato');
+
+				let gare_iscrizione_quantita = gare_iscrizione.length;
+				let gare_pagate_quantita = gare_pagate.length;
+				let gare_sconto_combo_applicato_quantita = gare_sconto_combo_applicato.length;
+				let totale_gare = gare_pagate_quantita + gare_iscrizione_quantita;
+
+				// Decrementa quantità indice in base a gare sconto combo
+				let totale_gare_index = totale_gare - gare_sconto_combo_applicato_quantita;
+				let gare_pagate_quantita_index = gare_pagate_quantita - gare_sconto_combo_applicato_quantita;
+
+				let lista_sconti = 
+				{
+					2: 5.00,
+					3: 12.00,
+					4: 20.00
+				};
+				let sconto = 0.00;
+				let sconto_applicato = 0.00;
+				let sconto_da_applicare = 0.00;
+
+				sconto_applicato = lista_sconti[gare_pagate_quantita_index] != undefined ? lista_sconti[gare_pagate_quantita_index] : 0.00;
+				sconto = lista_sconti[totale_gare_index] != undefined ? lista_sconti[totale_gare_index] : 0.00;
+				sconto_da_applicare = parseFloat(sconto - sconto_applicato);
+
+				TotaleScontiEventiQuantitaGareDaApplicare += sconto_da_applicare;
+				
+				let stringa_aggiunta = '\
+					<div class="col-md-12 align-self-center">\
+						<div class="card">\
+							<div class="card-header sfondo-grigio border-style-solid">\
+								<span class="mr-2">Sconto evento per quantità gare</span>\
+								<span class="text-warning">\
+									<div>Gare: ' + totale_gare +  '</div>' +
+									'<div>Gare escluse dallo sconto per sconto combo applicato: ' + gare_sconto_combo_applicato_quantita +  '</div>' +
+									'<div>Totale: € ' + sconto +  '</div>' +
+									'<div>Già saldato: € ' + sconto_applicato +  '</div>' +
+									'<div>Da applicare: € ' + sconto_da_applicare.toFixed(2) +  '</div>' +
+								'</span>\
+							</div>\
+						</div>\
+					</div>';
+
+					if (sconto > 0)
+						$(this).find('.SezioneScontiEventiQuantitaGare').html(stringa_aggiunta);
+					else
+						$(this).find('.SezioneScontiEventiQuantitaGare').html('');
+			});
+			
+			TotaleScontiEventiQuantitaGareDaApplicare = parseFloat(TotaleScontiEventiQuantitaGareDaApplicare).toFixed(2);
+
+			return parseFloat(TotaleScontiEventiQuantitaGareDaApplicare);
+		}
+		
+		// Genera key prodotto
+		function GeneraProdottoKey()
+		{
+			let key = 0;
+
+			$('.ProdottiShop_Key').each(function()
+			{
+				if ($(this).val() > key)
+					key = $(this).val();
+			});
+
+			key++;
+
+			return key;
+		}
+	});
+</script>
+
+{% endblock %}

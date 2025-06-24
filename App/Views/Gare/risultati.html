@@ -1,0 +1,113 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Risultati{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="#">Gare</a>
+      <li class="breadcrumb-item active">Risultati</li>
+    </li>
+</ol>
+
+<div class="row">
+    <div class="col-md-2 p-3"></div>
+    <div class="col-md-4 p-3">
+        <div class="text-center p-1 etichetta">Scegli gara</div>
+        <select class="form-control" id="IDGara" required>
+            <option value="">Seleziona gara</option>
+            {% for gara in ListaGareConRisultati %}
+                <option value="{{ gara.ID_gara }}">{{ gara.nome_evento }}: {{ gara.nome_gara }}</option>
+            {% endfor%}
+        </select>
+    </div>
+    <div class="col-md-4 p-3">
+        <div class="text-center p-1 etichetta">Scegli tipo</div>
+        <select class="form-control" id="TipoGara" required>
+            <option value="1">Generale</option>
+            <option value="3">Avis</option>
+            <option value="4">Over 40</option>
+            <option value="5">Over 50</option>
+        </select>
+    </div>
+    <div class="col-md-2 p-3"></div>
+</div>
+
+<div class="row">
+    <div class="col-lg-3 p-3 text-center m-auto">
+        <button type="button" id="GeneraRisultati" class="btn button-azzurro btn-block mt-5">Genera</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"></div>
+            <div class="panel-body" id="BloccoTabellaRisultati">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 p-3" id="Esito"></div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+        if ($(window).width() > 768) $('#dropdown_gare').click();
+		$('#menu_lista_risultati').addClass('menu-link-attivo');
+
+        // Genera risultati tabella
+        $(document).on('click', '#GeneraRisultati', function()
+        {
+            var IDGara= $('#IDGara').val();
+            var TipoGara= $('#TipoGara').val();
+
+            if (IDGara != '')
+            {
+                $.ajax({
+                        type: 'POST',
+                        url: URL + 'Gare/ajaxTabellaRisultati',
+                        data: {
+                                IDGara: IDGara,
+                                TipoGara: TipoGara
+                              },
+                        dataType: 'json',
+                        cache: false,
+                        success: function(result)
+                        {
+                            if (result['Successo'])
+                            {
+                                $('#BloccoTabellaRisultati').html(result['TabellaRisultati']);
+
+                                $('#TabellaRisultati').DataTable(
+                                {
+                                    "processing": true,
+                                    "scrollX": true,
+                                    "order": [[ 0, "asc" ]]
+                                });
+
+                                $('#Esito').html('');
+                            }
+                            else
+                            {
+                                $('#BloccoTabellaRisultati').html('');
+                                $('#Esito').html('<div class="text-danger text-center">Nessun risultato trovato per questa gara!</div>');
+                            }
+                        }
+                    });
+            }
+        });
+	});
+</script>
+
+{% endblock %}

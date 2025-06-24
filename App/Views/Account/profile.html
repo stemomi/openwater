@@ -1,0 +1,223 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Account - Panoramica{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+		<a href="#">Account</a>
+		<li class="breadcrumb-item active">Panoramica</li>
+	</li>
+</ol>
+
+<div class="row">
+
+	<div class="col-lg-6">
+		<div class="row align-items-center">
+
+			<div class="col-lg-6 mb-4 text-center">
+				{% if Utente.foto_profilo != '' %}
+					<img src="{{AppPath}}{{ Utente.foto_profilo }}" class="rounded-circle foto_profilo" width="200" height="200" alt="foto profilo">
+				{% else %}
+					<img src="{{AppPath}}img/foto_profilo_default.png" class="rounded-circle foto_profilo" width="200" height="200" alt="foto profilo">
+				{% endif %}
+			</div>
+
+			<div class="col-lg-6 mb-4">
+				<div class="row">
+					<div class="col-lg-12">
+						<h2><span class="testo-azzurro-tema">Benvenuto</span> <br> <b>{{ Utente.nome }} {{ Utente.cognome }}</b></h2>
+					</div>
+					<div class="col-lg-12">
+						<h5><span class="testo-azzurro-tema">ID Tessera:</span> <b>000{{ Utente.ID }}</b></h5>
+					</div>
+					<div class="col-lg-12" {% if Utente.credito == 0.00 %}hidden{% endif %}>
+						<h5><span class="testo-azzurro-tema">Credito:</span> <b>€ {{ Utente.credito }} (valido solo per il 2021, non cedibile)</b></h5>
+					</div>
+				</div>
+				
+			</div>
+
+		</div>
+	</div>
+
+	{% if Utente.IDSquadra > 0 %}
+
+	<div class="col-lg-6">
+		<div class="row align-items-center">
+
+			<div class="col-lg-12 mb-4 text-center">
+				{% if Utente.S_foto != '' %}
+					<img src="{{AppPath}}{{ Utente.S_foto }}" class="rounded-circle foto_profilo" width="200" height="200" alt="foto profilo">
+				{% else %}
+					<img src="{{AppPath}}img/no_image_available.png" class="rounded-circle foto_profilo" width="200" height="200" alt="foto profilo">
+				{% endif %}
+			</div>
+
+			<div class="col-lg-12 mb-4 text-center">
+				<h5><span class="testo-azzurro-tema">Squadra:</span> <b>{{ Utente.S_nome}}</b></h5>
+			</div>
+
+		</div>
+	</div>
+
+	{% endif %}
+
+</div>
+
+<div class="row">
+	<div class="col-lg-12 my-5 text-danger text-center">
+		{% if Utente.codice_fiscale == '' and Utente.paese_estero == '' %}
+			Codice fiscale o paese estero mancante!
+		{% endif %}
+	</div>
+</div>
+
+<div class="modal" id="ModalWarning">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Attenzione!</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+
+				<div class="row mb-2">
+					<div class="col-lg-12 p-3 text-center" id="WarningCodiceFiscalePaeseEstero">Codice Fiscale o Paese Estero sono obbligatori!</div>
+					<div class="col-lg-12 p-3 text-center" id="WarningSquadra">Selezione Squadra obbligatoria! (Se non si fa parte di una squadra, selezionare "Nessuna squadra")</div>
+					<div class="col-lg-12 p-3 text-center">
+						<a href="{{ AppPath }}Account/EditProfile">
+							<button class="btn btn-primary">Modifica Profilo</button>
+						</a>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Modal footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="modal" id="ModalConfermaDati">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Attenzione!</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+
+				<div class="row mb-2">
+					<div class="col-lg-12 p-3 text-center">E' necessario confermare i dati inseriti nel tuo profilo!</div>
+					<div class="col-lg-12 p-3 text-center">
+						<a href="{{ AppPath }}Account/EditProfile">
+							<button class="btn btn-primary">Modifica Profilo</button>
+						</a>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Modal footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="modal" id="modal_caricamento_autocertificazione_minori_18_anni">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Attenzione!</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+
+				<div class="row mb-2">
+					<div class="col-lg-12 p-3 text-center">E' necessario inserire l'autocertificazione minori 18 anni!</div>
+					<div class="col-lg-12 p-3 text-center">
+						<a href="{{ AppPath }}Account/EditProfile">
+							<button class="btn btn-primary">Modifica Profilo</button>
+						</a>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Modal footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_account').click();
+
+		var CodiceFiscale = "{{ Utente.codice_fiscale }}";
+		var PaeseEstero = "{{ Utente.paese_estero }}";
+		var IDSquadra = "{{ Utente.IDSquadra }}";
+		var ConfermaDati = "{{ Utente.conferma_dati }}";
+		var utente_autocertificazione_minori_18_anni_file_da_caricare = "{{ Utente.autocertificazione_minori_18_anni_file_da_caricare }}";
+
+		// Mostra modal
+		if 
+		( 
+			( CodiceFiscale == '' && PaeseEstero == '') ||
+			IDSquadra == ''
+	 	)
+			$('#ModalWarning').modal('show');
+
+		// Mostra warning codice fiscale o paese estero
+		if ( CodiceFiscale == '' && PaeseEstero == '')
+			$('#WarningCodiceFiscalePaeseEstero').show();
+		else
+			$('#WarningCodiceFiscalePaeseEstero').hide();
+
+		// Mostra warning squadra
+		if (IDSquadra == '')
+			$('#WarningSquadra').show();
+		else
+			$('#WarningSquadra').hide();
+
+		// Mostra warning conferma dati
+		if ( ConfermaDati < 1)
+			$('#ModalConfermaDati').modal('show');
+
+		// Mostra warning caricamento autocertificazione minori 18 anni
+		if (ConfermaDati == 1 && utente_autocertificazione_minori_18_anni_file_da_caricare == 1)
+			$('#modal_caricamento_autocertificazione_minori_18_anni').modal('show');
+	});
+</script>
+
+{% endblock %}

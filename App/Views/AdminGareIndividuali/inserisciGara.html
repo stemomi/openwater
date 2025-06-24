@@ -1,0 +1,76 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Gare Individuali - Inserisci Gara{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Gare Individuali</a>
+	  <li class="breadcrumb-item active">Inserisci Gara</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">Inserisci Gara</div>
+        <div class="card-body">
+
+        	<div class="col-md-12 p-3" id="SpazioNotifica">{% if GaraInserita is defined %}{{ GaraInserita|raw }}{% endif %}</div>
+
+			<form action="{{AppPath}}AdminGareIndividuali/inserisciGara" method="post">
+
+				<div class="form-group row">
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Scegli evento<span class="text-danger">*</span></div>
+		                <select class="form-control" name="IDEvento" required="required">
+		                	<option value="">Seleziona evento</option>
+		                	{% for evento in Eventi %}
+		                		<option value="{{ evento.ID }}">{{ evento.nome }}</option>
+		                	{% endfor%}
+		                </select>
+		            </div>
+
+					<div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Nome gara<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="text" class="form-control" name="Nome" required="required" autofocus="autofocus">
+		                </div>
+		            </div>
+
+		            <div class="col-md-4 p-3">
+		                <div class="text-center p-1 etichetta">Prezzo<span class="text-danger">*</span></div>
+		                <div class="form-label-group">
+		                  <input type="number" step="0.01" min="0" class="form-control" name="Prezzo" required="required">
+		                </div>
+		            </div>
+
+				</div>
+
+				<div class="col-lg-3 m-auto">
+	              <button type="submit" class="btn button-azzurro btn-block mt-5">Conferma</button>
+	            </div>
+
+    		</form>
+
+    	</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_gare_individuali').click();
+		$('#menu_inserisci_gara_individuale').addClass('active');
+
+		if ( $('#SpazioNotifica').html() != '' ) $('#SpazioNotifica').addClass('ButtonAnimato');
+	});
+</script>
+
+{% endblock %}

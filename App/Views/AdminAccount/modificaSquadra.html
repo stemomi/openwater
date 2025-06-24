@@ -1,0 +1,115 @@
+{% extends "baseProfileAdmin.html" %}
+
+{% block title %}Modifica Squadra{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+		<a href="{{AppPath}}AdminAccount/Squadre">Squadre</a>
+		<li class="breadcrumb-item active">Modifica Squadra</li>
+	</li>
+</ol>
+
+<div class="container_no_max_width">
+	<div class="card mx-auto mt-5">
+		<div class="card-header">Modifica Squadra</div>
+
+		<div class="card-body">
+
+			<div class="col-md-12 p-3">
+				{% if SquadraModificata is defined %} {{ SquadraModificata|raw }} {% endif %}
+			</div>
+
+			<form action="{{AppPath}}AdminAccount/ConfermaModificaSquadra" method="post" enctype="multipart/form-data">
+
+				<input type="hidden" name="IDSquadra" value="{{ Squadra.ID }}">
+
+				<div class="form-group row justify-content-center">
+
+					<div class="col-md-6 p-3">
+						<div class="text-center p-1 etichetta">Nome<span class="text-danger">*</span></div>
+						<div class="form-label-group">
+							<input type="text" class="form-control" name="Nome" value="{{ Squadra.nome }}" required="required" autofocus="autofocus">
+						</div>
+					</div>
+
+				</div>
+
+				<div class="form-group row justify-content-center">
+
+					<div class="col-md-6 p-3">
+
+							<div class="col-md-12 p-3">
+								<div class="text-center p-1 etichetta">Logo Squadra</div>
+
+								<div class="form-label-group text-center">
+									{% if Squadra.foto != '' %}
+										<img src="{{AppPath}}{{ Squadra.foto }}" class="foto_profilo rounded-circle" width="200" height="200" alt="logo squadra">
+									{% else %}
+										<img src="{{AppPath}}img/no_image_available.png" class="foto_profilo rounded-circle" width="200" height="200" alt="foto profilo">
+									{% endif %}
+								</div>
+							</div>
+
+							<div class="col-md-12">
+								<div class="col-md-12 text-center">
+									<div class="form-label-group">
+										<input type="file" class="form-control" name="FileLogoSquadra">
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="form-group row justify-content-center">
+
+					<div class="col-md-6 p-3">
+
+							<div class="col-md-12 p-3">
+								<div class="text-center p-1 etichetta">Capo Squadra</div>
+							</div>
+
+							<div class="col-md-12">
+								<select name="capo_squadra" class="form-control">
+									<option value="">-</option>
+									{% for MembroSquadra in ListaMembriSquadra %}
+										<option value="{{MembroSquadra.ID}}" {% if MembroSquadra.ID == Squadra.capo_squadra_id %} selected {% endif %}>{{ MembroSquadra.nome }} {{ MembroSquadra.cognome }}</option>
+									{% endfor %}
+								</select>
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="col-lg-3 m-auto">
+					<button type="submit" class="btn button-azzurro btn-block mt-5">Conferma</button>
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		if ($(window).width() > 768) $('#dropdown_squadre').click();
+	});
+</script>
+
+{% endblock %}

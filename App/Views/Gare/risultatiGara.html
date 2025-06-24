@@ -1,0 +1,210 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Gare - Risultati Gara{% endblock %}
+
+{% block body %}
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/it_IT/sdk.js#xfbml=1&version=v10.0" nonce="XNKuQ8mT"></script>
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+	  <a href="#">Gare</a>
+	  <li class="breadcrumb-item">
+	  	<a href="{{AppPath}}Gare/Passate">Gare Passate</a>
+	  	<li class="breadcrumb-item active">Risultati Gara</li>
+	  </li>
+	</li>
+</ol>
+
+{% if RisultatiDisponibili == 1 %}
+
+	<div class="card-header titolo-evento">Il Tuo Posizionamento</div>
+
+	{% if Personale_Posizione != '' %}
+
+		<div class="row mb-5">
+		    <div class="col-lg-12">
+		        <div class="panel panel-default">
+		            <div class="panel-heading"></div>
+		            <div class="panel-body p-3">
+		            	<table width="100%" class="table table-striped table-bordered table-hover" id="TabellaRisultatiPersonali">
+	                        <thead>
+	                            <tr>
+	                                <th>Utente</th>
+	                                <th class="text-center">Sesso</th>
+	                                <th class="text-center">Pos Generale</th>
+	                                <th class="text-center">Pos Sesso</th>
+	                                <th class="text-center">Crudo</th>
+	                                <th class="text-center">Pos Avis</th>
+	                                <th class="text-center">Pos Over 40</th>
+	                                <th class="text-center">Race Time</th>
+	                                <th class="text-center">Ora arrivo</th>
+	                                <th class="text-center">Distacco</th>
+	                                <th class="text-center">Media</th>
+	                                <th class="text-center" style="min-width: 100px;">Condividi su Facebook</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+	                        	<tr>
+	                                <td>{{ Personale_NomeCognome }}</td>
+	                                <td>{{ Personale_Sesso }}</td>
+	                                <td>{{ Personale_Posizione }}/{{ TotalePartecipanti }}</td>
+	                                <td>{{ Personale_PosizioneSesso }}/{% if Personale_Sesso == 'M' %}{{ TotalePosizioneSessoM }}
+	                                								   {% elseif Personale_Sesso == 'F' %}{{ TotalePosizioneSessoF }}
+	                                								   {% endif %}
+	                                </td>
+	                                <td>
+	                                	{% if Personale_Crudo_Flag == 1 %}
+	                                		<i class="fa fa-check text-success" aria-hidden="true"></i>
+	                                	{% endif %}
+	                                </td>
+	                                <td>{{ Personale_PosizioneAvis }}/{{ TotalePartecipantiAvisPerSesso }}</td>
+	                                <td>{{ Personale_PosizioneOver40 }}/{{ TotalePartecipantiOver40PerSesso }}</td>
+	                                <td>{{ Personale_RaceTime }}</td>
+	                                <td>{{ Personale_OraArrivo }}</td>
+	                                <td>{{ Personale_Distacco }}</td>
+	                                <td>{{ Personale_Media }}</td>
+	                                <td class="text-center">
+	                                	{% if FotoEventoTrovata == 1 %}
+		                                	<div
+		                                		class="btn btn-primary"
+		                                		id="GeneraLinkFacebook"
+		                                		style="
+		                                			min-width: 100px;
+		                                			font-family: Helvetica, Arial, sans-serif !important;
+		                                			font-size: 13px !important;
+		                                			border-radius: 4px;
+												    height: 28px;
+												    padding: 3px 8px;
+		                                		">
+		                                		<i class="fa fa-lg fa-facebook-square" aria-hidden="true"></i>
+		                                		<b>Genera link</b>
+		                                	</div>
+		                                	<div id="CondividiFacebookWrapper"></div>
+		                                {% endif %}
+	                                </td>
+	                            </tr>
+	                        </tbody>
+	                    </table>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+	{% else %}
+
+		<div class="row">
+		    <div class="col-lg-12 p-3">
+		    	<div class="text-danger text-center">Posizione personale non trovata!</div>
+		    </div>
+		</div>
+
+	{% endif %}
+
+	<div class="card-header titolo-evento">Classifica Generale {{ NomeGara }}</div>
+
+	<div class="row">
+	    <div class="col-lg-12">
+	        <div class="panel panel-default">
+	            <div class="panel-heading"></div>
+	            <div class="panel-body p-3">
+	            	{{ TabellaRisultati|raw }}
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+{% else %}
+
+	<div class="row">
+	    <div class="col-lg-12 p-3">
+	    	<div class="text-danger text-center">Risultati non disponibili per questa gara!</div>
+	    </div>
+	</div>
+
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+$(document).ready(function()
+{
+	if ($(window).width() > 768) $('#dropdown_gare').click();
+
+	//$('#CondividiFacebookWrapper').css('opacity', '0');
+
+	if ( {{ RisultatiDisponibili }} == 1)
+	{
+		$('#TabellaRisultati').DataTable(
+        {
+            "processing": true,
+            "scrollX": true,
+            "order": [[ 0, "asc" ]]
+        });
+
+        $('#TabellaRisultatiPersonali').DataTable(
+        {
+            "processing": true,
+            "scrollX": true,
+            "paging":   false,
+	        "ordering": false,
+	        "info":     false,
+	        "bFilter":  false,
+            "order": [[ 0, "asc" ]]
+        });
+
+        
+	}
+
+	// Genera link per condivisione Facebook
+	$(document).on('click', '#GeneraLinkFacebook', function()
+	{
+		var IDRisultato = {{ Personale_ID_Risultato }};
+
+		$.ajax(
+		{
+            type: 'POST',
+            url: URL + 'Share/ajaxGeneraCondivisioneRisultatoGara',
+            data: { IDRisultato: IDRisultato},
+            dataType: 'json',
+            cache: false,
+            success: function(result)
+            {
+            	if (result.esito == true)
+            	{
+            		var FacebookHref = 'https://{{ URL_TO_PUBLIC_FOLDER_NO_SLASHES }}Share/SharedRaceResult/' + result.token;
+
+	            	var StringaFacebook = '\
+	            	<div\
+	            		class="fb-share-button"\
+	            		data-href="' + FacebookHref + '"\
+	            		data-layout="button"\
+	            		data-size="large"\
+	            		id="FacebookShareButton"\
+	            		>\
+						<a\
+							target="_blank"\
+							href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse"\
+							class="fb-xfbml-parse-ignore">\
+						</a>\
+					</div>\
+	            	';
+
+	            	$('#CondividiFacebookWrapper').html(StringaFacebook);
+
+	            	FB.XFBML.parse();
+
+	            	//$('#CondividiFacebookWrapper').css('opacity', '1');
+					$('#GeneraLinkFacebook').hide();
+            	}
+            	else
+            		console.log('Errore nella generazione della condivisione risultato gara!');
+            }
+        });
+	});
+});
+</script>
+
+{% endblock %}

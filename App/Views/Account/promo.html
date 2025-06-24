@@ -1,0 +1,334 @@
+{% extends "baseProfile.html" %}
+
+{% block title %}Account - Promo{% endblock %}
+
+{% block body %}
+
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+	<li class="breadcrumb-item">
+		<a href="#">Account</a>
+		<li class="breadcrumb-item active">Promo</li>
+	</li>
+</ol>
+
+<form action="{{ AppPath }}Account/confermaSelezioneMagliette" method="POST">
+	<input 
+		type="hidden" 
+		name="numero_magliette_acquistate" 
+		value="{{ AcquistoMagliette.quantita }}"
+		id="numero-magliette-acquistate"
+	>
+	<div class="container_no_max_width SezioneShop">
+		<div class="card mx-auto mt-5" >
+			<div class="card-header titolo-evento">
+				<i class="fa fa-shopping-bag"></i> SELEZIONE MODELLO T-SHIRT OPENWATER - numero magliette acquistate: {{ AcquistoMagliette.quantita }}
+			</div>
+			<div class="card-body p-4 SezioneShop_Card">
+				<div class="row">
+
+					{% for Prodotto in Prodotti %}
+
+			    		<div class="col-md-12 align-self-center SezioneProdotto">
+			    			<input type="hidden" class="Prodotto_Prezzo" value="{{ Prodotto.prezzo }}">
+
+					        <div class="card">
+					            <div class="card-header sfondo-azzurro_tema border-style-solid">
+
+					            	<div class="row">
+
+					            		<div class="col-md-9 align-self-center">
+
+		            			        	<span class="mr-2">
+		            			        	{% if Prodotto.foto != '' %}
+		            			        	    <img src="{{AppPath}}{{ Prodotto.foto }}" class="Prodotto_Foto rounded-circle" width="100" height="100" alt="foto prodotto">
+		            			        	{% else %}
+		            			        	    <img src="{{AppPath}}img/no_image_available.png" class="Prodotto_Foto rounded-circle" width="100" height="100" alt="foto prodotto">
+		            			        	{% endif %}
+		            			        	</span>
+		            				        <span class="mr-2 Prodotto_Nome">{{ Prodotto.nome }}</span>
+
+		            				        {% for Attributo in Prodotto.AttributiProdotto %}
+		            				        	<div
+		            				        		class="col-md-12 mt-1 Prodotto_Attributo_{{ Prodotto.ID }}"
+		            				        		data-attributo-id="{{ Attributo.ID }}"
+		            				        		data-attributo-nome="{{ Attributo.nome|capitalize }}"
+		            				        	>
+													<h5 class="d-inline-flex text-warning">{{ Attributo.nome|capitalize }}</h5>
+												
+													<div class="col-md-3 d-inline-flex mt-1">
+			            				        		<select class="form-control show-disabled-options Prodotto_AttributoOpzioni">
+			            				        			{% for Opzione in Attributo.opzioni %}
+			            				        				<option
+			            				        					value="{{ Opzione.IDAttributoOpzione }}"
+			            				        					data-selectable="{{ Opzione.disponibile }}"
+			            				        					class="{% if Opzione.disponibile == 0 %}text-danger{% endif %}"
+			            				        					{% if Opzione.disponibile == 0 %}disabled{% endif %}
+			            				        				>{{ Opzione.attributo_opzione_nome }}</option>
+			            				        			{% endfor %}
+			            				        		</select>
+			            				        	</div>
+		            				        	</div>
+		            				        {% endfor %}
+
+					            		</div>
+
+					            		<div class="col-md-3 text-right">
+					            			<button
+					            				type="button"
+					            				class="btn btn-success mt-4 ButtonAggiungiProdotto"
+					            				data-prodotto-id="{{ Prodotto.ID }}"
+					            			>Aggiungi</button>
+					            		</div>
+					            	</div>
+				            	
+					           
+					    		</div>
+
+					    	</div>
+						</div>
+
+					{% endfor %}
+				</div>
+
+				<div class="row">
+					<div class="col-md-12">
+					    <div class="card mx-auto mt-5" >
+					        <div class="card-header titolo-evento text-warning"><i class="fa fa-shopping-cart" aria-hidden="true"></i> SELEZIONATE</div>
+					        <div class="card-body">
+
+					        	<div class="row">
+					        	    <div class="col-lg-12">
+					        	        <div class="panel panel-default">
+					        	            <div class="panel-heading"></div>
+					        	            <!-- /.panel-heading -->
+					        	            <div class="panel-body table-responsive">
+					        	                <table width="100%" class="table table-striped table-bordered table-hover" id="tabella_iscrizioni_anno">
+					        	                    <thead>
+					        	                        <tr class="sfondo-azzurro_tema">
+					        	                            <th class="text-center">Foto</th>
+					        	                            <th class="text-center">Descrizione</th>
+					        	                            <th class="text-center">Quantità</th>
+					        	                            <th class="text-center">Rimuovi</th>
+					        	                        </tr>
+					        	                    </thead>
+					        	                    <tbody id="CarrelloShop">
+
+					        	                    	{% for ProdottoAcquisto in ProdottiAcquisto %}
+					        	                    		<tr class="SezioneProdottoAggiunto">
+					        	                    			<input type="hidden" name="ProdottiShop_ID[]" value="{{ ProdottoAcquisto.IDProdotto }}">
+					        	                    			<input 
+					        	                    				type="hidden" 
+					        	                    				name="ProdottiShop_Key[]" 
+					        	                    				class="ProdottiShop_Key" 
+					        	                    				value="{{ ProdottoAcquisto.ID }}"
+					        	                    			>
+					        	                    			<input 
+					        	                    				type="hidden" 
+					        	                    				name="ProdottiShop_PrezzoEffettivo[]" 
+					        	                    				class="ProdottiShop_PrezzoEffettivo" 
+					        	                    				value="{{ ProdottoAcquisto.prezzo_effettivo }}"
+					        	                    			>
+
+					        	                    			<td class="text-center">
+					        	                    				<img 
+					        	                    					src="{{ ProdottoAcquisto.foto_src }}" 
+					        	                    					class="rounded-circle" 
+					        	                    					width="100" 
+					        	                    					height="100" 
+					        	                    					alt="foto prodotto"
+					        	                    				>
+					        	                    			</td>
+					        	                    			<td class="text-center">
+					        	                    				<span class="mr-2">
+					        	                    					{{ ProdottoAcquisto.prodotto_nome }}
+					        	                    				</span>
+					        	                    				{% for Attributo in ProdottoAcquisto.AttributiProdotto %}
+		        	                    					        	<div class="col-md-12 mt-1">
+		        	                    					        		<input 
+		        	                    					        			type="hidden" 
+		        	                    					        			name="ProdottiShop_Attributi[{{ ProdottoAcquisto.ID }}][{{ Attributo.attributo_ID }}]" 
+		        	                    					        			value="{{ Attributo.attributo_opzione_ID }}"
+		        	                    					        		>
+		        	                    									<h5 class="d-inline-flex mr-2">{{ Attributo.attributo_nome|capitalize }}</h5> <span>{{ Attributo.attributo_opzione_nome }}</span>
+		        	                    								</div>
+					        	                    				{% endfor %}
+					        	                    			</td>
+					        	                    			<td class="text-center align-middle">€ {{ ProdottoAcquisto.prezzo_effettivo }}</td>
+					        	                    			<td class="text-center align-middle">
+					        	                    		    	<input
+					        	                    		    		type="number"
+					        	                    		    		min="1"
+					        	                    		    		max="100"
+					        	                    		    		step="1"
+					        	                    		    		name="ProdottiShop_Quantita[]"
+					        	                    		    		value="{{ ProdottoAcquisto.quantita }}"
+					        	                    		    		class="form-control ProdottiShop_Quantita">
+					        	                    			</td>
+					        	                    			<td class="text-center align-middle">
+					        	                    				<button type="button" class="btn btn-danger ButtonRimuoviProdotto">Rimuovi</button>
+					        	                    			</td>
+					        	                    		</tr>
+					        	                    	{% endfor %}
+
+					        	                    </tbody>
+					        	                </table>
+					        	                <!-- /.table-responsive -->
+					        	            </div>
+					        	            <!-- /.panel-body -->
+					        	        </div>
+					        	        <!-- /.panel -->
+					        	    </div>
+					        	    <!-- /.col-lg-12 -->
+					        	</div>
+
+					        </div>
+					    </div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row ml-5 w-25">
+			<label>Seleziona evento per ritiro:</label>
+			<select class="form-control" name="evento_ritiro_maglietta" required>
+				<option value>-</option>
+				{% for Evento in Eventi %}
+					<option	value="{{ Evento.ID }}">{{ Evento.nome }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-3 m-auto p-3">
+			<div class="text-center text-danger" id="errore-numero-magliette-eccessivo"></div>
+			<button type="button" class="btn button-azzurro btn-block mt-5" id="conferma-selezione-magliette">Conferma selezione</button>
+			<button type="submit" name="conferma_selezione_magliette_form" id="conferma-selezione-magliette-form" hidden>Conferma Form</button>
+		</div>
+	</div>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		// Aggiungi prodotto
+		$(document).on('click', '.ButtonAggiungiProdotto', function()
+		{
+			let prodotto_key = GeneraProdottoKey();
+			let prodotto_ID = $(this).data('prodotto-id');
+			let prodotto_foto_src = $(this).closest('.SezioneProdotto').find('.Prodotto_Foto').attr('src');
+			let prodotto_foto = '<img src="' + prodotto_foto_src + '" class="rounded-circle" width="100" height="100" alt="foto prodotto">';
+			let prodotto_nome = $(this).closest('.SezioneProdotto').find('.Prodotto_Nome').text();
+			let prodotto_prezzo = $(this).closest('.SezioneProdotto').find('.Prodotto_Prezzo').val();
+			let AttributiProdotto = [];
+
+			// Attributi
+			$('.Prodotto_Attributo_' + prodotto_ID).each(function()
+			{
+				let AttributoProdotto = {};
+				AttributoProdotto.ID = $(this).data('attributo-id');
+				AttributoProdotto.nome = $(this).data('attributo-nome');
+				AttributoProdotto.valore = $(this).find('.Prodotto_AttributoOpzioni option:selected').val();
+				AttributoProdotto.valore_nome = $(this).find('.Prodotto_AttributoOpzioni option:selected').text();
+
+				AttributiProdotto.push(AttributoProdotto);
+			});
+
+			let prodotto_lista_attributi_html = '';
+
+			for (let Attributo of AttributiProdotto)
+			{
+				prodotto_lista_attributi_html += `
+		        	<div class="col-md-12 mt-1">
+		        		<input type="hidden" name="ProdottiShop_Attributi[` + prodotto_key + `][` + Attributo.ID + `]" value="` + Attributo.valore + `">
+						<h5 class="d-inline-flex mr-2">` + Attributo.nome + `</h5> <span>` + Attributo.valore_nome + `</span>
+					</div>
+				`;
+			}
+
+			let riga_prodotto = `
+				<tr class="SezioneProdottoAggiunto">
+					<input type="hidden" name="ProdottiShop_ID[]" value="` + prodotto_ID + `">
+					<input type="hidden" name="ProdottiShop_Key[]" class="ProdottiShop_Key" value="` + prodotto_key + `">
+					<input type="hidden" name="ProdottiShop_Prezzo[]" class="ProdottiShop_Prezzo" value="` + prodotto_prezzo + `">
+
+					<td class="text-center">` + prodotto_foto + `</td>
+					<td class="text-center">
+						<span class="mr-2">` + prodotto_nome + `</span>` + prodotto_lista_attributi_html + `
+					</td>
+					<td class="text-center align-middle">
+				    	<input
+				    		type="number"
+				    		min="1"
+				    		max="100"
+				    		step="1"
+				    		name="ProdottiShop_Quantita[]"
+				    		value="1"
+				    		class="form-control ProdottiShop_Quantita"
+				    	>
+					</td>
+					<td class="text-center align-middle">
+						<button type="button" class="btn btn-danger ButtonRimuoviProdotto">Rimuovi</button>
+					</td>
+				</tr>
+			`;
+
+			$('#CarrelloShop').append(riga_prodotto);
+		});
+
+		// Rimuovi prodotto
+		$(document).on('click', '.ButtonRimuoviProdotto', function()
+		{
+			$(this).closest('.SezioneProdottoAggiunto').remove();
+		});
+
+		// Genera key prodotto
+		function GeneraProdottoKey()
+		{
+			let key = 0;
+
+			$('.ProdottiShop_Key').each(function()
+			{
+				if ($(this).val() > key)
+					key = $(this).val();
+			});
+
+			key++;
+
+			return key;
+		}
+
+		// Submit conferma selezione magliette
+		$(document).on('click', '#conferma-selezione-magliette', function()
+		{
+			// Numero magliette acquistate
+			var numero_magliette_acquistate = $('#numero-magliette-acquistate').val();
+
+			// Variabile che conterrà la quantità selezionata
+			var numero_magliette_selezionate = 0;
+
+			// Rimozione messaggio di errore 'selezione numero magliette eccessivo'
+			$('#errore-numero-magliette-eccessivo').text('')
+
+			// Cicla i campi di input che definiscono la quantità del prodotto selezionata
+			$('.ProdottiShop_Quantita').each(function()
+			{
+				// Incrementa contatore numero magliette selezionate
+				numero_magliette_selezionate += parseInt($(this).val());
+			});
+
+			// Conferma form
+			if (numero_magliette_selezionate == numero_magliette_acquistate)
+				$('#conferma-selezione-magliette-form').click();
+			else
+				$('#errore-numero-magliette-eccessivo').text('Devi selezionare ' + numero_magliette_acquistate + ' magliette!');
+		});
+	});
+</script>
+
+{% endblock %}
