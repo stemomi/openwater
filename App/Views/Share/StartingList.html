@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Italian Openwater Tour - Starting List{% endblock %}
+
+{% block body %}
+
+<style type="text/css">
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-size: 16px;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    table {
+        table-layout: auto;
+        word-wrap: break-word;
+        width: 100%;
+        font-size: 14px;
+    }
+
+    th,
+    td {
+        vertical-align: middle;
+        text-align: center;
+        padding: 8px;
+    }
+
+    thead {
+        background-color: #202020;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    #scroll-container {
+        flex: 1 1 auto;
+        overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 20px !important;
+        }
+
+        .col-md-3,
+        .col-lg-12 {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .table {
+            font-size: 12px;
+        }
+
+        .table img {
+            width: 50px !important;
+        }
+
+        td h2,
+        td p {
+            font-size: 14px !important;
+        }
+
+        select.form-control,
+        button.btn {
+            width: 100%;
+            font-size: 14px;
+        }
+
+        thead th {
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        td.text-left {
+            text-align: left !important;
+        }
+
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            display: none;
+        }
+
+        .nome-atleta {
+            display: block !important;
+            visibility: visible !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            word-break: break-word !important;
+        }
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary">
+        {{ Gara.A_nome_evento|upper }} - {{ Gara.nome|upper }}
+    </h2>
+
+    <div class="text-center my-3">
+        <button id="downloadPDF" class="btn btn-success">Scarica PDF</button>
+    </div>
+
+    <table class="table table-bordered text-center" id="startingListTable">
+        <thead>
+            <tr>
+                <th style="width: 50%;">Cognome</th>
+                <th style="width: 50%;">Nome</th>
+            </tr>
+        </thead>
+        <tbody id="body-tabella">
+            {% for partecipante in IscrittiGara %}
+            <tr style="background-color: {{ loop.index0 is even ? '#d9ead3' : '#fff2cc' }}">
+                <td><strong>{{ partecipante.cognome }}</strong></td>
+                <td>{{ partecipante.nome }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    $('#downloadPDF').click(function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+
+        doc.setFontSize(16);
+        doc.text('STARTING LIST', 14, 15);
+        doc.setFontSize(12);
+        doc.text("{{ Gara.A_nome_evento|upper }} - {{ Gara.nome|upper }}", 14, 25);
+
+        const tableColumn = ["Cognome", "Nome"];
+        const tableRows = [];
+
+        $('#body-tabella tr').each(function () {
+            const cognome = $(this).find('td:nth-child(1)').text().trim();
+            const nome = $(this).find('td:nth-child(2)').text().trim();
+            tableRows.push([cognome, nome]);
+        });
+
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 35,
+            styles: {
+                fontSize: 11,
+                halign: 'center',
+                cellPadding: 2
+            },
+            headStyles: {
+                fillColor: [0, 102, 204],
+                textColor: [255, 255, 255]
+            },
+            alternateRowStyles: {
+                fillColor: [240, 240, 240]
+            }
+        });
+
+        doc.save('starting_list.pdf');
+    });
+</script>
+
+{% endblock %}

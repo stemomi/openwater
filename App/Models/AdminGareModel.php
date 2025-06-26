@@ -1292,4 +1292,24 @@ class AdminGareModel extends \Core\Model
         $stmt->bindValue(':flag', $flag, PDO::PARAM_BOOL);
         $stmt->execute();
     }
+
+    public static function getIscrittiGara($gara_id)
+{
+    $db = static::getDB();
+    $sql = "
+        SELECT u.nome, u.cognome
+        FROM iscrizioni i
+        INNER JOIN utenti u ON u.ID = i.ID_utente
+        WHERE i.ID_gara = :gara_id
+        ORDER BY u.cognome, u.nome
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':gara_id' => $gara_id]);
+
+    return $stmt->fetchAll(PDO::FETCH_OBJ); // Puoi usare FETCH_ASSOC se preferisci
+}
+
+
+
 }

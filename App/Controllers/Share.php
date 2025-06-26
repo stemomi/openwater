@@ -892,4 +892,34 @@ class Share extends \Core\Controller
             echo json_encode($Risposta);
         }
     }
+
+    public function StartingList()
+    {
+        $AdminGareClass = new AdminGareModel();
+
+        $gara_id = $this->route_params['garaid'] ?? null;
+
+        $Gara = $AdminGareClass->getGara($gara_id);
+
+        // Verifica se la gara esiste
+        if (!$Gara) {
+            die('Gara non trovata');
+        }
+
+        // Controlla se la gara consente la visualizzazione
+        if ($Gara->mostra_risultati == 0) {
+            die('I risultati per la gara non sono visualizzabili al momento');
+        }
+
+        $iscritti = AdminGareModel::getIscrittiGara($gara_id);
+
+        $ArrayTemplateAction = [
+            'Gara' => $Gara,
+            'IscrittiGara' => $iscritti,
+            'URL_TO_PUBLIC_FOLDER' => URL_TO_PUBLIC_FOLDER
+        ];
+
+        View::renderTemplate('Share/StartingList.html', $ArrayTemplateAction);
+    }
+
 }

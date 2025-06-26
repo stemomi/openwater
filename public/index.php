@@ -263,5 +263,7 @@ $router->add('Share/CurrentRaceRelayResults/{garaid:\d+}/{autoscroll:\d+}', ['co
 $router->add('Share/SharedRaceResult/{token:\w+}', ['controller' => 'Share', 'action' => 'SharedRaceResult']);
 $router->add('Share/SharedUserRaceResult/{risultatoid:\d+}', ['controller' => 'Share', 'action' => 'SharedUserRaceResult']);
 $router->add('Share/ajaxGeneraCondivisioneRisultatoGara', ['controller' => 'Share', 'action' => 'ajaxGeneraCondivisioneRisultatoGara']);
+$router->add('Share/StartingList/{garaid:\d+}', ['controller' => 'Share', 'action' => 'StartingList']);
+
     
 $router->dispatch($_SERVER['QUERY_STRING']);
